@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">AppAlertaGenero</string>
+    <!-- Escritura de imagen fallida. Compruebe si ha otorgado el permiso WRITE_EXTERNAL_STORAGE-->
+    <string name="error_cannot_write">No se puede escribir la imagen capturada por la cámara.</string>
+    <!--cámara abierta fallida. Probablemente porque otra aplicación está usando la cámara -->
+    <string name="error_cannot_open">No se puede abrir la cámara.</string>
+    <!-- el permiso de la cámara no está disponible Solicite el permiso de la cámara antes de inicializarla.-->
+    <string name="error_cannot_get_permission">Permiso de cámara no disponible.</string>
+    <string name="error_not_having_camera">Su dispositivo no tiene cámara frontal.</string>
+    <string name="error_camera_permission_denied">Permiso de cámara denegado.</string>
+    <string name="btn_tittle_capture_image">Capturar imagen,</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="title_activity_configuracion">Configuración</string>
+    <string name="title_activity_permisos">permisos</string>
+
+    <string name="explicacion_almacenamiento">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="explicacion_camara">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="explicacion_ubicacion">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="explicacion_audio">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+
+    <string name="error_tiempo_agotado">Tiempo agotado</string>
+    <string name="error_sin_conexion">Sin conexión</string>
+    <string name="error_fallo_autenticar">Falló al autenticar</string>
+    <string name="error_servidor">Servidor</string>
+    <string name="error_red">Red</string>
+    <string name="error_parseo">Parseo</string>
+    <string name="error_desconocido">Desconocido</string>
+    <string name="title_activity_registro">registro</string>
+    <string name="title_activity_directorio">Directorio</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+</resources>
