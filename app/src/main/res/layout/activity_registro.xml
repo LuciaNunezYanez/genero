@@ -404,7 +404,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Calle:"
+                    android:text="Calle: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -427,7 +427,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Número exterior:"
+                    android:text="Número exterior: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -450,7 +450,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Colonia/fraccionamiento:"
+                    android:text="Colonia/fraccionamiento: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -496,7 +496,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Estado:"
+                    android:text="Estado: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -517,7 +517,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Municipio:"
+                    android:text="Municipio: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -538,7 +538,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Localidad:"
+                    android:text="Localidad: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -617,7 +617,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Referencia del domicilio:"
+                    android:text="Referencia del domicilio: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 

@@ -28,10 +28,12 @@ public class AdaptadorDirectorio extends BaseAdapter {
         final View vista = inflater.inflate(R.layout.elemento_directorio, null);
         TextView lblTitulo = (TextView) vista.findViewById(R.id.lblTituloDirectorio);
         TextView lblDatos = (TextView) vista.findViewById(R.id.lblDireccion);
+        TextView lblTelefonos = (TextView) vista.findViewById(R.id.lblTelefono);
         //ImageView image = (ImageView) vista.findViewById(R.id.imageDirectorio);
 
         lblTitulo.setText(datos[i][0]);
         lblDatos.setText(datos[i][1]);
+        lblTelefonos.setText(datos[i][2]);
         // image.setImageResource(R.drawable.ic_location);
 
 

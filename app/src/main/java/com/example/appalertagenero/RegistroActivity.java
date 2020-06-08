@@ -35,6 +35,7 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.androidhiddencamera.HiddenCameraUtils;
 import com.example.appalertagenero.Utilidades.Utilidades;
 
 import org.json.JSONArray;
@@ -66,7 +67,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
 
     String stCorreo, stNombres, stPaterno, stMaterno, stNacimiento, stPadecimientos, stTelefonoM, stAlergias, stSexo, stSangre;
     String stCalle, stNumeroExt, stColonia, stCalle1, stCalle2, stReferencia, stEstado, stMunicipio, stLocalidad;
-    int codigoP;
+    int codigoP = 0;
 
     String sexo [] = { "Seleccionar", "Femenino", "Masculino", "Desconocido" };
     String sangre [] = { "Seleccionar", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", "No sé" };
@@ -149,6 +150,9 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                 //Toast.makeText(getApplicationContext(), stNombres + " " + stPaterno + " " + stMaterno + " " + stNacimiento + " " +
                   //      stPadecimientos + " " + stTelefonoM + " " + stAlergias + " " + stSexo + " " + stSangre, Toast.LENGTH_LONG).show();
 
+                if(stSangre.equals("Seleccionar"))
+                    stSangre = "";
+
                 if(!Utilidades.validEmail(stCorreo)) {
                     Toast.makeText(getApplicationContext(), "Correo electrónico inválido", Toast.LENGTH_LONG).show();
 
@@ -166,7 +170,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                         Toast.makeText(getApplicationContext(), "Teléfono inválido, solo 10 digitos", Toast.LENGTH_LONG).show();
 
                     } catch (Exception e){
-                        Toast.makeText(getApplicationContext(), "No son puros numeros", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "No son puros números", Toast.LENGTH_LONG).show();
                     }
 
                 } else {
@@ -192,23 +196,40 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                 stCalle = txtCalle.getText().toString();
                 stNumeroExt = txtNumeroExt.getText().toString();
                 stColonia = txtColonia.getText().toString();
-                codigoP = Integer.parseInt(txtCodigoP.getText().toString());
+                String cp = txtCodigoP.getText().toString();
+
                 stCalle1 = txtCalle1.getText().toString();
                 stCalle2 = txtCalle2.getText().toString();
                 stReferencia = areaReferencia.getText().toString();
-                stEstado = spEstado.getSelectedItem().toString();
-                stMunicipio = spMunicipio.getSelectedItem().toString();
-                stLocalidad = spLocalidad.getSelectedItem().toString();
 
-                // Toast.makeText(getApplicationContext(), "FIN; " + stCalle + " " + stNumeroExt + " " + stColonia + " " + stCodigoP + " " + stCalle1 + " " +
-                //      stCalle2 + " " + stReferencia + " " + stEstado +" " + stMunicipio + " " + stLocalidad, Toast.LENGTH_LONG).show();
-
-                if(true){
-                    crearUsuario();
+                if(stCalle.length() < 3){
+                    Toast.makeText(getApplicationContext(), "Calle incorrecta", Toast.LENGTH_LONG).show();
+                } else if( stNumeroExt.length() == 0){
+                    Toast.makeText(getApplicationContext(), "Número exterior incorrecto", Toast.LENGTH_LONG).show();
+                } else if( stColonia.length() < 3){
+                    Toast.makeText(getApplicationContext(), "Colonia incorrecta", Toast.LENGTH_LONG).show();
+                } else if( cp.length() > 0 && cp.length() < 5){
+                    Toast.makeText(getApplicationContext(), "El código postal debe contener 5 dígitos", Toast.LENGTH_LONG).show();
+                } else if( spMunicipio.getSelectedItem() == null || spLocalidad.getSelectedItem() == null){
+                    Toast.makeText(getApplicationContext(), "Municipio y/o localidad inválida", Toast.LENGTH_LONG).show();
+                } else if( stReferencia.length() < 10 || areaReferencia.getText() == null || areaReferencia.getText().toString().length() < 10){
+                    Toast.makeText(getApplicationContext(), "Referencia muy corta", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Datos de domicilio incompletos", Toast.LENGTH_LONG).show();
+                    if(cp.length() == 5 || cp.length() == 0){
+                        try {
+                            if(cp.length() > 0)
+                                codigoP = Integer.parseInt(cp);
+                            Toast.makeText(getApplicationContext(), "Registraré usuario: " + codigoP, Toast.LENGTH_SHORT).show();
+                            stEstado = spEstado.getSelectedItem().toString();
+                            stMunicipio = spMunicipio.getSelectedItem().toString();
+                            stLocalidad = spLocalidad.getSelectedItem().toString();
+                            // Registrar usuario
+                            crearUsuario();
+                        } catch (Exception e){
+                            Toast.makeText(getApplicationContext(), "El código postal debe contener solo números", Toast.LENGTH_LONG).show();
+                        }
+                    }
                 }
-
             }
         });
 
@@ -463,63 +484,66 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
 
     public static void getMunicipios(final Context context, int id_estado){
 
-        StringRequest requestGetMunicipios;
-        String URL = Constantes.URL + "/municipios/" + id_estado;
+        try {
+            StringRequest requestGetMunicipios;
+            String URL = Constantes.URL + "/municipios/" + id_estado;
 
-        final RequestQueue requestQueue = Volley.newRequestQueue(context);
+            final RequestQueue requestQueue = Volley.newRequestQueue(context);
 
-        requestGetMunicipios = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.i(TAG, "La respuesta al obtener los municipios es: " + response);
+            requestGetMunicipios = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.i(TAG, "La respuesta al obtener los municipios es: " + response);
 
-                try{
-                    JSONObject jsonResponse = new JSONObject(response);
+                    try {
+                        JSONObject jsonResponse = new JSONObject(response);
 
-                    JSONArray ids_municipios = jsonResponse.optJSONArray("id_municipios");
-                    JSONArray nombre_municipios = jsonResponse.optJSONArray("nombre_municipio");
+                        JSONArray ids_municipios = jsonResponse.optJSONArray("id_municipios");
+                        JSONArray nombre_municipios = jsonResponse.optJSONArray("nombre_municipio");
 
-                    misMunicipios = new ArrayList<String>();
-                    misIDsMunicipios = new ArrayList<String>();
+                        misMunicipios = new ArrayList<String>();
+                        misIDsMunicipios = new ArrayList<String>();
 
-                    for (int i = 0; i < nombre_municipios.length(); i++){
-                        misMunicipios.add(nombre_municipios.getString(i));
-                        misIDsMunicipios.add(ids_municipios.getString(i));
+                        for (int i = 0; i < nombre_municipios.length(); i++) {
+                            misMunicipios.add(nombre_municipios.getString(i));
+                            misIDsMunicipios.add(ids_municipios.getString(i));
+                        }
+                        spMunicipio.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_selectable_list_item, misMunicipios));
+                    } catch (JSONException e) {
+                        Toast.makeText(context, "Error al obtener los municipios" + e.toString(), Toast.LENGTH_SHORT).show();
                     }
-                    spMunicipio.setAdapter( new ArrayAdapter<>(context, android.R.layout.simple_selectable_list_item, misMunicipios));
+                    requestQueue.stop();
                 }
-                catch(JSONException e){
-                    Toast.makeText(context, "Error en municipios"+e.toString(), Toast.LENGTH_SHORT).show();
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    String errorResp = "Error #11: Desconocido";
+
+                    if (error instanceof TimeoutError) {
+                        errorResp = "Error #11: Verifique su conexión para proceder con el registro";
+                    } else if (error instanceof NoConnectionError) {
+                        errorResp = "Error #11: Sin conexión con el servidor";
+                    } else if (error instanceof AuthFailureError) {
+                        errorResp = "Error #11: Fallo al autenticar";
+                    } else if (error instanceof ServerError) {
+                        errorResp = "Error #11: Servidor";
+                    } else if (error instanceof NetworkError) {
+                        errorResp = "Error #11: Red";
+                    } else if (error instanceof ParseError) {
+                        errorResp = "Error #11: Parseo";
+                    }
+
+                    Log.e(TAG, errorResp);
+                    Toast.makeText(context, errorResp, Toast.LENGTH_LONG).show();
+
+                    requestQueue.stop();
                 }
-                requestQueue.stop();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorResp = "Error #11: " + R.string.error_desconocido;
+            });
 
-                if (error instanceof TimeoutError) {
-                    errorResp = "Error #11A: " + R.string.error_tiempo_agotado;
-                } else if (error instanceof NoConnectionError) {
-                    errorResp = "Error #11B: " + R.string.error_sin_conexion;
-                } else if (error instanceof AuthFailureError) {
-                    errorResp = "Error #11C: " + R.string.error_fallo_autenticar;
-                } else if (error instanceof ServerError) {
-                    errorResp = "Error #11D: " + R.string.error_servidor;
-                } else if (error instanceof NetworkError) {
-                    errorResp = "Error #11E: " + R.string.error_red;
-                } else if (error instanceof ParseError) {
-                    errorResp = "Error #11F: " + R.string.error_parseo;
-                }
-
-                Log.e(TAG, errorResp);
-                Log.e(TAG, error.getMessage());
-
-                requestQueue.stop();
-            }
-        });
-
-        requestQueue.add(requestGetMunicipios);
+            requestQueue.add(requestGetMunicipios);
+        } catch (Exception e){
+            Toast.makeText(context, "Excepción", Toast.LENGTH_LONG).show();
+        }
     }
 
     public static void getLocalidades(final Context context, int id_municipio){
@@ -615,7 +639,10 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constantes.MY_PERMISSIONS_REQUEST_UBICAC);
     }
 
-
+    private void permisoParaAparecerEncima(){
+        iniciarMain();
+        HiddenCameraUtils.openDrawOverPermissionSetting(getApplicationContext());
+    }
 
 
 
@@ -636,7 +663,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                 return;
             }
             case Constantes.MY_PERMISSIONS_REQUEST_UBICAC: {
-                iniciarMain();
+                permisoParaAparecerEncima();
                 return;
             }
         }

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,8 @@ public class ConfiguracionActivity extends AppCompatActivity {
     private EditText txtNoCiclo;
     private String TAG = "Configuracion";
 
+    boolean conf_nueva = false;
+
     ImageButton btnAlmacWrite, btnCam, btnMicrof, btnUbic;
 
     @Override
@@ -47,8 +50,10 @@ public class ConfiguracionActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
                     iniciarServicioPersistente();
+                    conf_nueva = true;
                 } else {
                     detenerServicioPersistente();
+                    conf_nueva = false;
                 }
             }
         });
@@ -91,9 +96,11 @@ public class ConfiguracionActivity extends AppCompatActivity {
         if (preferences.contains("notificacionActiva")){
             isActive = Utilidades.isMyServiceRunning(getApplication(), ServicioNotificacion.class);
             switchServicioActivo.setChecked(isActive);
+            conf_nueva = Utilidades.isMyServiceRunning(getApplication(), ServicioNotificacion.class);
         } else {
             isActive = Utilidades.isMyServiceRunning(getApplication(), ServicioNotificacion.class);
             switchServicioActivo.setChecked(isActive);
+            conf_nueva = false;
         }
     }
 
@@ -114,11 +121,17 @@ public class ConfiguracionActivity extends AppCompatActivity {
     }
 
     public void iniciarServicioPersistente(){
-        Intent notificationIntent = new Intent(getApplication(), ServicioNotificacion.class);
-        notificationIntent.putExtra("padre", "App");
-        getApplication().startService(notificationIntent);
-        isActive = Utilidades.isMyServiceRunning(getApplication(), ServicioNotificacion.class);
-        actualizarPreferenciasNotificacion(isActive);
+        try{
+            Intent notificationIntent = new Intent(getApplication(), ServicioNotificacion.class);
+            notificationIntent.putExtra("padre", "App");
+            getApplication().startService(notificationIntent);
+
+            isActive = Utilidades.isMyServiceRunning(getApplication(), ServicioNotificacion.class);
+            actualizarPreferenciasNotificacion(isActive);
+        }catch (Exception io){
+            Toast.makeText(getApplicationContext(), "Error al actualizar preferencias", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     public void detenerServicioPersistente(){
@@ -230,4 +243,16 @@ public class ConfiguracionActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Reiniciar servicio unicamente para API menor a OREO
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+                && !Utilidades.isMyServiceRunning(getApplication(), ServicioNotificacion.class)
+                && conf_nueva){
+            Intent notificationIntent = new Intent(getApplication(), ServicioNotificacion.class);
+            notificationIntent.putExtra("padre", "App");
+            getApplication().startService(notificationIntent);
+        }
+    }
 }

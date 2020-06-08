@@ -103,8 +103,9 @@ public class FotografiaService extends HiddenCameraService {
                         }
                     }, 2000L);
                 } else {
-                    HiddenCameraUtils.openDrawOverPermissionSetting(getApplicationContext());
-                    responderReceiver(ERROR, imagen, "Sin permiso de camára");
+                    // Solicitar permisos de aparecer encima
+                    // HiddenCameraUtils.openDrawOverPermissionSetting(getApplicationContext());
+                    responderReceiver(ERROR, imagen, "Sin permiso de aparecer encima");
                 }
             } else {
                 Log.d(TAG, "Permiso de cámara no disponible");

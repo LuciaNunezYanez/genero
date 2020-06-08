@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
     static String FECHA_FRONTAL = "";
     static String FECHA_TRASERA = "";
+
+    static boolean audio_proceso = false;
 
 
     // VARIABLES PARA REPORTE CREADO
@@ -421,11 +424,11 @@ public class MainActivity extends AppCompatActivity {
      **********************************************************************************************/
 
     public static void comenzarGrabacionAudio(Context context){
-        Log.d(TAG, "Init grabar audio...");
-
         Intent intent = new Intent(context, AudioService.class);
         intent.putExtra("nombreAudio", "GrabacionBotonDePanico");
+        intent.putExtra("padre", "in");
         intent.putExtra("reporteCreado", reporteCreado);
+        audio_proceso = true;
         context.startService(intent);
     }
 
@@ -585,10 +588,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(isFinishing()){
-            Log.d(TAG,"on Destroy > is Finishing ");
-        }else {
-            Log.d(TAG,"on Destroy > is Rotating ");
-        }
+        /*getApplication().stopService(new Intent(getApplication(), AudioService.class));
+
+                Intent intent = new Intent(getApplication(), AudioService.class);
+                intent.putExtra("nombreAudio", "GrabacionBotonDePanico");
+                intent.putExtra("padre", "out");
+                intent.putExtra("reporteCreado", reporteCreado);
+                getApplication().startService(intent);*/
+        //Toast.makeText(contextoGlobal.get(), "¡ON DESTROY MAIN!", Toast.LENGTH_LONG).show();
+
+
     }
 }

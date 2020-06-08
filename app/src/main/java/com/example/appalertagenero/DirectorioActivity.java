@@ -22,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.appalertagenero.Clases.AdaptadorDirectorio;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,22 +35,14 @@ public class DirectorioActivity extends AppCompatActivity {
 
     static String TAG = "Directorio";
     static ListView lista;
-    static String[][] datos_directorio = {
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur"},
-    };
-
-    static String[][] datos_DB = {
-
-    };
-    static ArrayList<String> directorio = new ArrayList<>();
-    static List<Map<String,String>> employeeList = new ArrayList<Map<String,String>>();
+    /*static String[][] datos_directorio = {
+            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"},
+            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"},
+            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"},
+            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"},
+            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"},
+            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"}
+    };*/
 
 
     @Override
@@ -57,63 +50,66 @@ public class DirectorioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_directorio);
         lista = findViewById(R.id.listDirectorio);
-        getDirectorio(getApplicationContext(), "alerta de genero");
+        getDirectorio(getApplicationContext(), "genero");
     }
 
     public static void getDirectorio(final Context context, String filtro){
 
         StringRequest requestGetDirectorio;
         String URL = Constantes.URL + "/directorio/" + filtro;
+        Log.d(TAG, URL);
 
         final RequestQueue requestQueue = Volley.newRequestQueue(context);
 
         requestGetDirectorio = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i(TAG, "La respuesta al obtener directorio: " + response);
-
                 try{
-                    JSONObject jsonResponse = new JSONObject(response);
-                    /*JSONArray jsonMainNode = jsonResponse.optJSONArray("employee");
+                    JSONObject object_response = new JSONObject(response);
+                    Boolean ok = object_response.getBoolean("ok");
+                    if(ok){
+                        JSONArray object_directorio = object_response.getJSONArray("directorio");
+                        String datos_DB[][] = new String[object_directorio.length()][3];
+                        for (int e = 0; e < object_directorio.length(); e ++){
+                            try {
+                                JSONObject centro =  new JSONObject( object_directorio.getString(e));
+                                try{
+                                    datos_DB[e][0] = centro.getString("nombre_direct");
+                                } catch (Exception p ){
+                                    datos_DB[e][0] = "CENTRO DESCONOCIDO.";
+                                }
+                                try{
+                                    String direccion_completa =
+                                                centro.getString("calle") +
+                                                " #" + centro.getString("numero") +
+                                                ", " + centro.getString("colonia") +
+                                                "\nC.P. " + centro.getString("cp") +
+                                                " " + centro.getString("nombre_localidad") +
+                                                ", " + centro.getString("abrev") +
+                                                "\nEntre " + centro.getString("entre_calle_1") +
+                                                " y " + centro.getString("entre_calle_2");
+                                    datos_DB[e][1] = direccion_completa;
+                                } catch (Exception p){
+                                    datos_DB[e][1] = "Dirección incorrecta.";
+                                }
+                                try{
+                                    datos_DB[e][2] = centro.getString("telefonos");
+                                } catch (Exception p){
+                                    datos_DB[e][2] = "Teléfono desconocido.";
+                                }
 
-                    for(int i = 0; i<jsonMainNode.length();i++){
-                        JSONObject jsonChildNode = jsonMainNode.getJSONObject(i);
-                        String name = jsonChildNode.optString("nombre_direct");
-                        String direccion = jsonChildNode.optString("id_direccion");
-                        String outPut = name + "-" +direccion;
-                        employeeList.add(createEmployee("directorio", outPut));
-                    }*/
+                            } catch (Exception i){
+                                datos_DB[e][0] = "Centro desconocido.";
+                                datos_DB[e][1] = "Dirección incorrecta.";
+                                datos_DB[e][2] = "Teléfono incorrecto.";
+                            }
+                        }
+                        lista.setAdapter(new AdaptadorDirectorio(context, datos_DB));
+                    }
                 }
                 catch(JSONException e){
                     Toast.makeText(context, "Error"+e.toString(), Toast.LENGTH_SHORT).show();
                 }
-
-                /*try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    JSONArray ja = jsonObject.getJSONArray("directorio");
-                    JSONObject jo;
-                    directorio.clear();
-
-
-                    for (int i = 0; i < ja.length(); i++){
-                        jo = ja.getJSONObject(i);
-                        Iterator<String> keys = jo.keys();
-                        while( keys.hasNext()){
-                            String keyName = keys.next();
-
-                        }
-
-
-                        Log.d(TAG,"XXX- " + ja.getString(i));
-                    }
-
-                } catch (JSONException e) {
-                    Log.d(TAG, "Error parse");
-                    e.printStackTrace();
-                }
-                */
-
-                lista.setAdapter(new AdaptadorDirectorio(context, datos_directorio));
                 requestQueue.stop();
             }
         }, new Response.ErrorListener() {
@@ -140,24 +136,7 @@ public class DirectorioActivity extends AppCompatActivity {
                 requestQueue.stop();
             }
         });
-        /*{
-            @Override
-            public String getBodyContentType() {
-            return "application/json; charset=utf-8";
-        }
-
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-            try {
-                return requestBody == null ? null : requestBody.getBytes("utf-8");
-            } catch (UnsupportedEncodingException uee) {
-                VolleyLog.wtf("Codificación no compatible al intentar obtener los bytes de% s usando %s", requestBody, "utf-8");
-                return null;
-            }
-        }
-        };*/
         requestQueue.add(requestGetDirectorio);
-        //return seCancelo;
     }
 
 
