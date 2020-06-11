@@ -61,7 +61,7 @@ public class PanicoWidget extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.btnAlertarWidget, pendingIntent);
             appWidgetManager.updateAppWidget(appWidgetId, views);
 
-            Toast.makeText(context, "Se creó en >28 ", Toast.LENGTH_LONG).show();
+            //Toast.makeText(context, "Se creó en >28 ", Toast.LENGTH_LONG).show();
             // Iniciar generar alerta
 
         } else {
@@ -72,7 +72,7 @@ public class PanicoWidget extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.btnAlertarWidget, pendingIntent);
             appWidgetManager.updateAppWidget(appWidgetId, views);
 
-            Toast.makeText(context, "Se creó en <28 ", Toast.LENGTH_LONG).show();
+            //Toast.makeText(context, "Se creó en <28 ", Toast.LENGTH_LONG).show();
 
         }
     }

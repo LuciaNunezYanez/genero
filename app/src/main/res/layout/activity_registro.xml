@@ -92,6 +92,7 @@
                     android:ems="10"
                     android:inputType="textEmailAddress"
                     android:maxLength="100"
+                    android:text="@gmail.com"
                     android:textColor="@android:color/black" />
 
                 <TextView
@@ -115,6 +116,7 @@
                     android:ems="10"
                     android:inputType="textPersonName"
                     android:maxLength="50"
+                    android:text="mi nombre"
                     android:textColor="@android:color/black" />
 
                 <TextView
@@ -138,6 +140,7 @@
                     android:ems="10"
                     android:inputType="textPersonName"
                     android:maxLength="40"
+                    android:text="mi paterno"
                     android:textColor="@android:color/black" />
 
                 <TextView
@@ -230,7 +233,9 @@
                         android:layout_weight="1"
                         android:backgroundTint="#8F8888"
                         android:spinnerMode="dropdown" />
+
                 </LinearLayout>
+
 
                 <TextView
                     android:layout_width="match_parent"
@@ -283,6 +288,7 @@
                     android:ems="10"
                     android:inputType="phone"
                     android:maxLength="10"
+                    android:text="618125"
                     android:textColor="@android:color/black" />
 
                 <TextView
@@ -404,7 +410,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Calle:"
+                    android:text="Calle: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -418,6 +424,7 @@
                     android:ems="10"
                     android:inputType="textPersonName"
                     android:maxLength="100"
+                    android:text="mi calle"
                     android:textColor="@android:color/black" />
 
                 <TextView
@@ -427,7 +434,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Número exterior:"
+                    android:text="Número exterior: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -441,6 +448,7 @@
                     android:ems="10"
                     android:inputType="textPersonName"
                     android:maxLength="10"
+                    android:text="exte"
                     android:textColor="@android:color/black" />
 
                 <TextView
@@ -450,7 +458,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Colonia/fraccionamiento:"
+                    android:text="Colonia/fraccionamiento: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -464,6 +472,7 @@
                     android:ems="10"
                     android:inputType="textPersonName"
                     android:maxLength="100"
+                    android:text="colonia"
                     android:textColor="@android:color/black" />
 
                 <TextView
@@ -496,7 +505,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Estado:"
+                    android:text="Estado: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -517,7 +526,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Municipio:"
+                    android:text="Municipio: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -538,7 +547,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Localidad:"
+                    android:text="Localidad: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -617,7 +626,7 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="bottom"
-                    android:text="Referencia del domicilio:"
+                    android:text="Referencia del domicilio: *"
                     android:textColor="@color/colorRosaClaro"
                     android:textSize="16sp" />
 
@@ -637,7 +646,7 @@
                     android:paddingRight="5dp"
                     android:scrollbarAlwaysDrawVerticalTrack="true"
                     android:scrollbars="vertical"
-                    android:text=""
+                    android:text="Aquí la referencia del domicilio"
                     android:textColor="@android:color/black"
                     android:verticalScrollbarPosition="defaultPosition" />
 

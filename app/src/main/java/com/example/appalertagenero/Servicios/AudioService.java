@@ -1,15 +1,22 @@
 package com.example.appalertagenero.Servicios;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -27,6 +34,8 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.appalertagenero.Constantes;
+import com.example.appalertagenero.R;
+import com.example.appalertagenero.Utilidades.Notificaciones;
 import com.example.appalertagenero.Utilidades.Utilidades;
 
 import org.json.JSONException;
@@ -34,9 +43,14 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.Permission;
 
+import static com.example.appalertagenero.Constantes.CHANNEL_ID;
 import static com.example.appalertagenero.Constantes.DURACION_AUDIO;
 import static com.example.appalertagenero.Constantes.EXTENSION_AUDIO;
+import static com.example.appalertagenero.Constantes.ID_SERVICIO_AUDIO;
+import static com.example.appalertagenero.Constantes.ID_SERVICIO_PANICO;
+import static com.example.appalertagenero.Constantes.ID_SERVICIO_WIDGET_GRABAR_AUDIO;
 
 public class AudioService extends Service  {
 
@@ -45,9 +59,9 @@ public class AudioService extends Service  {
     private String nombreAudio = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
-    Intent intentG;
     Boolean hasStart = false;
     String TAG = "AudioServiceT";
+    String padre = "desc";
 
     GrabarAudioBackground grabarAudioBackground;
 
@@ -70,12 +84,17 @@ public class AudioService extends Service  {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         if (intent != null) {
-            intentG = intent;
             nombreAudio = intent.getStringExtra("nombreAudio");
             reporteCreado = intent.getIntExtra("reporteCreado", 0);
+            padre = intent.getStringExtra("padre");
+            crearNotificacionPersistente();
             comenzarHiloGrabacionAudio(contadorRecorder);
+
+        } else {
+            //Toast.makeText(getApplicationContext(), "INTENT DE AUDIO NULL", Toast.LENGTH_LONG).show();
         }
-        return super.onStartCommand(intent, flags, startId);
+        //return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     @Override
@@ -85,6 +104,7 @@ public class AudioService extends Service  {
     }
 
     public void comenzarHiloGrabacionAudio(int posicionGuardar){
+
         grabarAudioBackground = new GrabarAudioBackground();
         grabarAudioBackground.execute(posicionGuardar);
     }
@@ -130,7 +150,6 @@ public class AudioService extends Service  {
                     contadorEnvio++;
 
                     if(contadorEnvio == 4){
-                        //stopSelf();
                         darResultados(true);
                         stopSelf();
                         Log.d(TAG, "stopSelf()");
@@ -232,33 +251,44 @@ public class AudioService extends Service  {
         }
 
         private void iniciarGrabacion(){
-
             AudioSavePathInDevice = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + nombreAudio + "_" + posicionParaGuardar + "." + EXTENSION_AUDIO;
-            mediaRecorder = new MediaRecorder();
+            Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 1: " + posicionParaGuardar);
 
-            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            // mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            // mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+            if(mediaRecorder == null){
+                mediaRecorder = new MediaRecorder();
+                mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                // mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                // mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+                mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+                mediaRecorder.setMaxDuration(DURACION_AUDIO);
+                mediaRecorder.setOutputFile(AudioSavePathInDevice);
+                mediaRecorder.setOnInfoListener(this);
+            } else {
+                Log.d(TAG, "Media Recorder NO es NULL");
+            }
+            Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 2: " + posicionParaGuardar);
 
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
-            mediaRecorder.setMaxDuration(DURACION_AUDIO);
-            mediaRecorder.setOutputFile(AudioSavePathInDevice);
-            mediaRecorder.setOnInfoListener(this);
+            Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 3: " + posicionParaGuardar);
 
             try {
+                Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 4: " + posicionParaGuardar);
                 mediaRecorder.prepare();
+                Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 5: " + posicionParaGuardar);
                 mediaRecorder.start();
+                Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 6: " + posicionParaGuardar);
 
                 fechas[posicionParaGuardar] = Utilidades.obtenerFecha();
 
-                hasStart= true;
+                hasStart = true;
             } catch (IllegalStateException e) {
                 Log.d(TAG, "(Hilo 1) Catch 1");
                 e.printStackTrace();
+                darResultados(false);
             } catch (IOException e) {
-                Log.d(TAG, "(Hilo 1) Catch 2");
+                Log.d(TAG, "(Hilo 1) Catch 2" + e.getMessage());
+                darResultados(false);
                 e.printStackTrace();
             }
             Log.d(TAG, "(Hilo 1) (iniciarGrabacion()) Empezó grabación. Contador: " + posicionParaGuardar);
@@ -269,10 +299,12 @@ public class AudioService extends Service  {
             switch (what){
                 case MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED:
                     mediaRecorder.stop();
+                    //mediaRecorder.release(); // No funciona
                     onPostExecute(AudioSavePathInDevice);
                     break;
             }
         }
+
         @Override
         protected void onPostExecute(String path) {
             super.onPostExecute(path);
@@ -286,7 +318,7 @@ public class AudioService extends Service  {
         }
     }
 
-    private void reproducir(String path) {
+    /*private void reproducir(String path) {
         mediaPlayer = new MediaPlayer();
         try {
             mediaPlayer.setDataSource(path);
@@ -297,6 +329,58 @@ public class AudioService extends Service  {
 
         mediaPlayer.start();
         Log.d(TAG, "(reproducir) Reproduciendo audio.");
+    }*/
+
+    public void crearNotificacionPersistente(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Intent notificationIntent = new Intent(getApplicationContext(), AudioService.class);
+            PendingIntent pendingIntent =
+                    PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
+
+            // Crear notificación de servicio activo
+            Notification notification =
+                    new Notification.Builder(getApplicationContext(), CHANNEL_ID)
+                            .setColor(Color.WHITE)
+                            .setContentText("Grabando audio..")
+                            .setSmallIcon(R.drawable.ic_siren_chica)
+                            .setColor(Color.GRAY)
+                            .setContentIntent(pendingIntent)
+                            .build();
+
+            // Crear al canal de notificación, pero solo en API 26+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CharSequence nombre = "Alerta de género"; //2
+                String descripcion = "El uso de este servicio le permite detectar cuando se presiona tres veces el botón de bloqueo y genera la alerta de pánico"; //
+                int importancia = NotificationManager.IMPORTANCE_HIGH;
+
+                NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, nombre, importancia);
+                notificationChannel.setDescription(descripcion);
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+
+            startForeground(ID_SERVICIO_AUDIO, notification);
+
+        } else{
+            Log.d(TAG,"XXXXXXXXXXX SERVICIO PARA NO MENOR A OREO!");
+            //Notificaciones.crearNotificacionNormalV2(getApplicationContext(), CHANNEL_ID, R.drawable.ic_camara, "AudioService", "En ejecución", ID_SERVICIO_WIDGET_GRABAR_AUDIO, AudioService.class);
+
+            Intent notificationIntent = new Intent(getApplicationContext(), AudioService.class);
+            PendingIntent pendingIntent =
+                    PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
+
+            // Crear notificación de servicio activo
+            Notification notification =
+                    new Notification.Builder(getApplicationContext())
+                            .setColor(Color.WHITE)
+                            .setContentText("Grabando audio..")
+                            .setSmallIcon(R.drawable.ic_siren_chica)
+                            .setColor(Color.GRAY)
+                            .setContentIntent(pendingIntent)
+                            .build();
+
+            startForeground(ID_SERVICIO_AUDIO, notification);
+        }
     }
 
     private void darResultados(boolean termino){

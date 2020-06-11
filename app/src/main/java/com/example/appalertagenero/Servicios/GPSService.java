@@ -1,12 +1,19 @@
 package com.example.appalertagenero.Servicios;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
@@ -15,11 +22,15 @@ import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.appalertagenero.R;
 import com.example.appalertagenero.Utilidades.Utilidades;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+
+import static com.example.appalertagenero.Constantes.CHANNEL_ID;
+import static com.example.appalertagenero.Constantes.ID_SERVICIO_AUDIO;
 
 public class GPSService extends Service {
 
@@ -55,15 +66,18 @@ public class GPSService extends Service {
     }
 
     private void locationStart() {
-
-        Log.i(TAG, "GPS "+ "locationStart()");
-
         mlocManager = (LocationManager) getSystemService(getApplicationContext().LOCATION_SERVICE);
         Local = new Localizacion();
         final boolean gpsEnabled = mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        // PRUEBA
+        Intent intent = new Intent("GPSService");
+        intent.putExtra("fecha", fechaActual);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+
         if (!gpsEnabled) {
             // GPS Desactivado
-            darResultados(0.0, 0.0, "GPS Deshabilitado");
+            darResultados(getApplicationContext(),0.0, 0.0, "GPS Deshabilitado");
         } else {
             try{
                 mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, Local, Looper.myLooper());
@@ -76,10 +90,10 @@ public class GPSService extends Service {
                 mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, Local, Looper.myLooper());
             }catch (java.lang.SecurityException ex) {
                 Log.i(TAG, "GPS "+ "no solicitar la actualización de ubicación: " + ex.getMessage());
-                darResultados(0.0, 0.0, "No se pudo obtener la ubicación actual");
+                darResultados(getApplicationContext(),0.0, 0.0, "No se pudo obtener la ubicación actual");
             } catch (IllegalArgumentException ex) {
                 Log.d(TAG, "GPS "+ "proveedor de red no existe, " + ex.getMessage());
-                darResultados(0.0, 0.0, "El proveedor GPS no existe");
+                darResultados(getApplicationContext(),0.0, 0.0, "El proveedor GPS no existe");
             }
         }
     }
@@ -116,7 +130,7 @@ public class GPSService extends Service {
                 e.printStackTrace();
             }
 
-            darResultados(loc.getLatitude(), loc.getLongitude(), "Se localizó ubicación");
+            darResultados(getApplicationContext(), loc.getLatitude(), loc.getLongitude(), "Se localizó ubicación");
             stopSelf();
         }
 
@@ -124,13 +138,13 @@ public class GPSService extends Service {
         @Override
         public void onProviderDisabled(String provider) {
             // Este metodo se ejecuta cuando el GPS es desactivado
-            Toast.makeText(getApplicationContext(), "Error #8: GPS Desactivado", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Error #8: GPS Desactivado", Toast.LENGTH_LONG).show();
             Log.d(TAG, "GPS Desactivado");
         }
         @Override
         public void onProviderEnabled(String provider) {
             // Este metodo se ejecuta cuando el GPS es activado
-            Toast.makeText(getApplicationContext(), "Error #8: GPS Activado", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Error #8: GPS Activado", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "GPS Activado");
         }
         @Override
@@ -139,7 +153,8 @@ public class GPSService extends Service {
         }
     }
 
-    private void darResultados(Double latitud, Double longitud, String mensaje){
+
+    private void darResultados(Context context, Double latitud, Double longitud, String mensaje){
         Intent intent = new Intent("GPSService");
         intent.putExtra("fecha", fechaActual);
         intent.putExtra("latitud", latitud);
@@ -147,7 +162,7 @@ public class GPSService extends Service {
         intent.putExtra("padre", nombrePadre);
         intent.putExtra("reporteCreado", reporteGenerado);
         intent.putExtra("mensaje", mensaje);
-        LocalBroadcastManager.getInstance(getApplication()).sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         stopSelf();
     }
 }

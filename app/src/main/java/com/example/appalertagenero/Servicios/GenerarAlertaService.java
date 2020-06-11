@@ -41,7 +41,6 @@ public class GenerarAlertaService extends Service {
     // ===============================
     private int idComercio;
     private int idUsuario;
-    private String sala;
     private String fecha;
     public static int reporteCreado;
     public static Boolean alertaRecibida;
@@ -82,21 +81,21 @@ public class GenerarAlertaService extends Service {
         try{
             idComercio = intent.getIntExtra("comercio", 0);
             idUsuario = intent.getIntExtra("usuario", 0);
-            sala = intent.getStringExtra("sala");
+            // sala = intent.getStringExtra("sala");
             fecha = intent.getStringExtra("fecha");
         }catch ( Exception e ){
             Log.d(TAG, "Debe regresar que no se encontrarón los datos parametros de entrada");
-            darResultados(getApplicationContext(), 0, false, false, false, "Los datos del comercio son incorrectos");
+            darResultados(getApplicationContext(), 0, false, false, false, "Los datos del grupo son incorrectos");
             stopSelf();
         }
 
         if (idComercio != 0 && idUsuario != 0){
-            Log.d(TAG, "Recibí:" + " Comercio "+ idComercio + " Usuario " + idUsuario + " Sala " + sala + " Fecha " + fecha);
+            Log.d(TAG, "Recibí:" + " Comercio "+ idComercio + " Usuario " + idUsuario + " Fecha: " + fecha);
             generarReporte();
 
         } else {
             Log.d(TAG, "No venian los datos del comercio: " + idComercio + ", user: " + idUsuario);
-            darResultados(getApplicationContext(),0, false, false, false, "Los datos del comercio son incorrectos");
+            darResultados(getApplicationContext(),0, false, false, false, "Los datos del grupo son incorrectos");
             stopSelf();
         }
         return super.onStartCommand(intent, flags, startId);
@@ -166,9 +165,9 @@ public class GenerarAlertaService extends Service {
                 String errorResp = "Error #6: Desconocido";
 
                 if (error instanceof TimeoutError) {
-                    errorResp = "Error #6: Tiempo agotado";
+                    errorResp = "Error #6: Verifique su conexión";
                 } else if (error instanceof NoConnectionError) {
-                    errorResp = "Error #6: Sin conexión";
+                    errorResp = "Error #6: Sin conexión con el servidor";
                 } else if (error instanceof AuthFailureError) {
                     errorResp = "Error #6: Fallo al autenticar";
                 } else if (error instanceof ServerError) {

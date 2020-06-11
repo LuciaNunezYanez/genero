@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
     static String FECHA_FRONTAL = "";
     static String FECHA_TRASERA = "";
+
+    static boolean audio_proceso = false;
 
 
     // VARIABLES PARA REPORTE CREADO
@@ -235,21 +238,21 @@ public class MainActivity extends AppCompatActivity {
                                 if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                                     comenzarGPS(context);
                                 } else {
-                                    Toast.makeText(context, "No tiene permisos GPS", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(context, "No tiene permisos GPS", Toast.LENGTH_SHORT).show();
                                     Log.e(TAG, "No tiene permisos GPS");
                                 }
 
                                 if(ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
                                     comenzarGrabacionAudio(context);
                                 } else {
-                                    Toast.makeText(context, "No tiene permisos de audio", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(context, "No tiene permisos de audio", Toast.LENGTH_SHORT).show();
                                     Log.e(TAG, "No tiene permisos de audio");
                                 }
 
                                 if(ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
                                     iniciarProcesoFotografias(context);
                                 } else {
-                                    Toast.makeText(context, "No tiene permisos de camara", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(context, "No tiene permisos de camara", Toast.LENGTH_SHORT).show();
                                     Log.e(TAG, "No tiene permisos de camara");
                                 }
                             } else {
@@ -361,6 +364,12 @@ public class MainActivity extends AppCompatActivity {
         // Al menos guardar las fotografía en el dispositivo
     }
 
+    public static void terminarFotografias(Context context){
+        Intent intentFotos = new Intent(context, FotografiaService.class);
+        context.stopService(intentFotos);
+        Log.d(TAG, "KKKKKKKKKKKKKK");
+    }
+
     /**********************************************************************************************
      *                                        GPS                                                  *
      **********************************************************************************************/
@@ -410,7 +419,7 @@ public class MainActivity extends AppCompatActivity {
                     terminarGPS(context);
                 }
             } else if(latitud == 0.0 && longitud == 0.0){
-                Toast.makeText(context, parametros.getString("mensaje"), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, parametros.getString("mensaje"), Toast.LENGTH_SHORT).show();
                 terminarGPS(context);
             }
         }
@@ -421,11 +430,11 @@ public class MainActivity extends AppCompatActivity {
      **********************************************************************************************/
 
     public static void comenzarGrabacionAudio(Context context){
-        Log.d(TAG, "Init grabar audio...");
-
         Intent intent = new Intent(context, AudioService.class);
         intent.putExtra("nombreAudio", "GrabacionBotonDePanico");
+        intent.putExtra("padre", "in");
         intent.putExtra("reporteCreado", reporteCreado);
+        audio_proceso = true;
         context.startService(intent);
     }
 
@@ -455,7 +464,7 @@ public class MainActivity extends AppCompatActivity {
 
             switch (resultCode) {
                 case ERROR:
-                    Toast.makeText(contextoGlobal.get(), message, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(contextoGlobal.get(), message, Toast.LENGTH_SHORT).show();
                     break;
                 case SUCCESS:
                     Boolean puede = PreferencesReporte.puedeCancelarAlerta(contextoGlobal.get(), System.currentTimeMillis());
@@ -497,7 +506,7 @@ public class MainActivity extends AppCompatActivity {
 
             switch (resultCode) {
                 case ERROR:
-                    Toast.makeText(contextoGlobal.get(), message, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(contextoGlobal.get(), message, Toast.LENGTH_SHORT).show();
                     break;
                 case SUCCESS:
 
@@ -585,10 +594,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(isFinishing()){
-            Log.d(TAG,"on Destroy > is Finishing ");
-        }else {
-            Log.d(TAG,"on Destroy > is Rotating ");
-        }
+        terminarFotografias(getApplication());
+
+        /*getApplication().stopService(new Intent(getApplication(), AudioService.class));
+
+                Intent intent = new Intent(getApplication(), AudioService.class);
+                intent.putExtra("nombreAudio", "GrabacionBotonDePanico");
+                intent.putExtra("padre", "out");
+                intent.putExtra("reporteCreado", reporteCreado);
+                getApplication().startService(intent);*/
+        //Toast.makeText(contextoGlobal.get(), "¡ON DESTROY MAIN!", Toast.LENGTH_LONG).show();
+
+
     }
 }

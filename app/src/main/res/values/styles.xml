@@ -32,4 +32,8 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="mySpinnerItemStyle" parent="Base.Widget.AppCompat.Spinner">
+        <item name="android:textColor">@color/colorRosaGuinda</item>
+    </style>
 </resources>

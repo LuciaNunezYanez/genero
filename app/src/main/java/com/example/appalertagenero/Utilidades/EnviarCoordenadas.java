@@ -2,7 +2,6 @@ package com.example.appalertagenero.Utilidades;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
@@ -93,7 +92,7 @@ public class EnviarCoordenadas {
                     } else if (error instanceof ParseError) {
                         errorResp = "Error #3: " + R.string.error_parseo;
                     }
-                    Toast.makeText(context, errorResp, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, errorResp, Toast.LENGTH_SHORT).show();
                     Log.e(TAG, errorResp);
                     requestQueue.stop();
                 }

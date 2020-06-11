@@ -78,7 +78,6 @@ public class ServicioNotificacion extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Toast.makeText(getApplicationContext(), "¡Se creó servicio para detectar alerta a traves del botón de bloqueo!", Toast.LENGTH_LONG).show();
 
         botonazoReceiver = new BotonazoReceiver();
         IntentFilter intentFilter = new IntentFilter();
@@ -92,12 +91,16 @@ public class ServicioNotificacion extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Bundle params = intent.getExtras();
-        String padre = params.getString("padre");
-        if( padre.equals("App") ){
+        if(intent != null) {
+            Bundle params = intent.getExtras();
+            String padre = params.getString("padre");
             crearNotificacionPersistente();
+        } else {
+            //Toast.makeText(getApplicationContext(), "Recibí intent NULL", Toast.LENGTH_LONG).show();
         }
-        return super.onStartCommand(intent, flags, startId);
+
+        //return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     /*********************************************************************************************
@@ -123,7 +126,7 @@ public class ServicioNotificacion extends Service {
             PreferencesReporte.guardarReporteInicializado(getApplicationContext());
             registrarReceiverGnerarAlerta();
 
-            registrarEscuchadorGPS();
+            //registrarEscuchadorGPS();
             iniciarServicioGenerarAlerta();
 
         } else{
@@ -396,7 +399,7 @@ public class ServicioNotificacion extends Service {
                 if (reporteCreado != 0) {
                     // Guardar la información del ultimo reporte generado
                     PreferencesReporte.actualizarUltimoReporte(getApplicationContext(), reporteCreado);
-                    Toast.makeText(context, "Se creó el reporte desde la notificación. Folio #" + reporteCreado, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, "Se creó el reporte desde la notificación. Folio #" + reporteCreado, Toast.LENGTH_LONG).show();
 
                     Notificaciones notificaciones = new Notificaciones();
                     notificaciones.crearNotificacionNormal(context, CHANNEL_ID,  R.drawable.ic_color_success, "¡Alerta enviada!", "Se generó alerta con folio #" + reporteCreado, ID_SERVICIO_WIDGET_GENERAR_ALERTA);
@@ -411,6 +414,7 @@ public class ServicioNotificacion extends Service {
 
                     // GPS
                     terminarServicioGPS();
+                    registrarEscuchadorGPS();
                     comenzarGPS();
 
                     // Obtener el numero de ciclos para comenzar a tomar las fotografias
@@ -419,7 +423,7 @@ public class ServicioNotificacion extends Service {
                     if(ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
                         iniciarProcesoFotografias();
                     } else {
-                        Toast.makeText(context, "No tiene permisos de camara", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(context, "No tiene permisos de camara", Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "No tiene permisos de camara");
                     }
 
@@ -438,7 +442,6 @@ public class ServicioNotificacion extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle parametros = intent.getExtras();
-            Log.d(TAG, "Los parametros: " + parametros);
 
             double latitud = parametros.getDouble("latitud", 0.0);
             double longitud = parametros.getDouble("longitud", 0.0);
@@ -461,6 +464,8 @@ public class ServicioNotificacion extends Service {
                 }
             }
         }
+
+
     };
 
     private BroadcastReceiver broadcastReceiverAudio = new BroadcastReceiver() {
@@ -499,7 +504,7 @@ public class ServicioNotificacion extends Service {
 
     public void crearNotificacionPersistente(){
 
-        Log.d(TAG,"¡Se creó notificación persistente!");
+        // Log.d(TAG,"¡Se creó notificación persistente!");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Intent notificationIntent = new Intent(getApplicationContext(), ServicioNotificacion.class);
@@ -518,7 +523,7 @@ public class ServicioNotificacion extends Service {
 
             // Crear al canal de notificación, pero solo en API 26+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                CharSequence nombre = "Botón de pánico para comercios"; //2
+                CharSequence nombre = "Alerta de género"; //2
                 String descripcion = "El uso de este servicio le permite detectar cuando se presiona tres veces el botón de bloqueo y genera la alerta de pánico"; //
                 int importancia = NotificationManager.IMPORTANCE_HIGH;
 
@@ -529,16 +534,18 @@ public class ServicioNotificacion extends Service {
             }
 
             startForeground(ID_SERVICIO_PANICO, notification);
+            Toast.makeText(getApplicationContext(), "¡Se creó servicio para detectar alerta a traves del botón de bloqueo!", Toast.LENGTH_LONG).show();
             Log.d(TAG,"Se inicio servicio para API 26+ - Desde servicio prueba!");
 
         } else{
-            // Mostrar el otro tipo de notificación
+            Toast.makeText(getApplicationContext(), "¡Se creó servicio para detectar alerta a traves del botón de bloqueo!", Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        //Toast.makeText(getApplicationContext(), "On Destroy", Toast.LENGTH_LONG).show();
         // Cancela el registro del BroadCast Creo que debo cancelar todas las suscripciones
         unregisterReceiver(botonazoReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiverBotonazo);

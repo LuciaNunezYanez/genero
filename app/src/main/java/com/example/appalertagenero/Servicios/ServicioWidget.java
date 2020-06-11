@@ -32,6 +32,7 @@ import com.example.appalertagenero.Utilidades.PreferencesReporte;
 import com.example.appalertagenero.Utilidades.Utilidades;
 
 import static com.example.appalertagenero.Constantes.CHANNEL_ID;
+import static com.example.appalertagenero.Constantes.ID_SERVICIO_WIDGET;
 import static com.example.appalertagenero.Constantes.ID_SERVICIO_WIDGET_CREAR_REPORTE;
 import static com.example.appalertagenero.Constantes.ID_SERVICIO_WIDGET_GENERAR_ALERTA;
 
@@ -62,6 +63,7 @@ public class ServicioWidget extends Service {
 
     Intent intentGPS;
     Notificaciones notificaciones = new Notificaciones();
+    Boolean reportegenerado = false;
 
     public ServicioWidget() {
     }
@@ -74,7 +76,10 @@ public class ServicioWidget extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         iniciarProceso();
-        crearNotificacionPersistente(getApplicationContext(), ServicioWidget.class, CHANNEL_ID, "Botón de pánico activado", "Botón activado desde el widget. Enviando multimedia..", R.drawable.ic_notification_siren_2, "Descripción", ID_SERVICIO_WIDGET_CREAR_REPORTE);
+        /*if (Build.VERSION.SDK_INT >=  Build.VERSION_CODES.O)
+            crearNotificacionPersistente(getApplicationContext(), ServicioWidget.class, CHANNEL_ID, "Botón de pánico activado", "Botón activado desde el widget. Enviando multimedia..", R.drawable.ic_notification_siren_2, "Descripción", ID_SERVICIO_WIDGET_CREAR_REPORTE);
+        else */
+            Notificaciones.crearNotificacionNormal(getApplicationContext(), CHANNEL_ID, R.drawable.ic_color_error, "Botón de pánico activado", "Botón activado desde el widget. Enviando multimedia..", ID_SERVICIO_WIDGET);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -95,11 +100,10 @@ public class ServicioWidget extends Service {
             registrarEscuchadorGPS();
             // Iniciar el servicio GenerarAlertaService
             iniciarServicioGenerarAlerta();
-        } else{
-            deboTerminar();
-            Log.d(TAG, "NO PUEDE GENERAR REPORTE POR QUE HAY UNO PENDIENTE!!");
         }
     }
+
+
 
     public void crearNotificacionPersistente(Context context, Class clase, String canal, String titulo, String mensaje, int icono, String descripcion, int idServicio){
 
@@ -384,6 +388,7 @@ public class ServicioWidget extends Service {
                 detenerServicioAlerta();
 
                 if (reporteCreado != 0) {
+                    reportegenerado = true;
                     // Guardar la información del ultimo reporte generado
                     PreferencesReporte.actualizarUltimoReporte(getApplicationContext(), reporteCreado);
                     notificaciones.crearNotificacionNormal(context, CHANNEL_ID,  R.drawable.ic_color_success, "¡Alerta enviada!", "Se generó alerta con folio #" + reporteCreado, ID_SERVICIO_WIDGET_GENERAR_ALERTA);
@@ -435,10 +440,8 @@ public class ServicioWidget extends Service {
                     Log.d(TAG, "Coordenadas GPS añadidas con éxito");
                     eliminarEscuchadorGPS();
                     terminarServicioGPS();
-                    deboTerminar();
                 } else {
                     terminarServicioGPS();
-                    deboTerminar();
                     Log.d(TAG, "Error al enviar coordenadas GPS");
                 }
             }
@@ -451,32 +454,19 @@ public class ServicioWidget extends Service {
             Bundle parametros = intent.getExtras();
             boolean termino = parametros.getBoolean("termino");
 
-            Log.d(TAG, "Respondió Servicio");
+            Log.d(TAG, "Respondió Servicio " + parametros.toString());
             if(termino){
                 terminarGrabacionAudio();
                 boolean terminoAudio = Utilidades.isMyServiceRunning(getApplicationContext(), AudioService.class);
                 Log.d(TAG, "TERMINÓ AUDIO SERVICE? " + terminoAudio);
-                deboTerminar();
             } else {
                 Log.d(TAG, "Termino mal Audio");
+                terminarGrabacionAudio();
                 //eliminarEscuchadorAudio();
-                deboTerminar();
             }
         }
     };
 
-    public void deboTerminar(){
-        Boolean runAudio = Utilidades.isMyServiceRunning(getApplicationContext(), AudioService.class);
-        Boolean runGPS = Utilidades.isMyServiceRunning(getApplicationContext(), GPSService.class);
-        Boolean runFotograf = Utilidades.isMyServiceRunning(getApplicationContext(), FotografiaService.class);
-
-        if(!runAudio && !runGPS && !runFotograf){
-            stopSelf();
-            Log.d(TAG, "StopSelf() Servicio Widget");
-        } else {
-            Log.d(TAG, "Aún no debo terminar. Audio: " + runAudio + " GPS: " + runGPS + " Fotograf: " + runFotograf);
-        }
-    }
 
 
     @Override
