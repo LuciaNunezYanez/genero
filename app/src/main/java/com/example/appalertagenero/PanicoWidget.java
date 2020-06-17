@@ -7,10 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.example.appalertagenero.Servicios.ServicioWidget;
+import com.example.appalertagenero.Utilidades.Utilidades;
 
 import java.lang.ref.WeakReference;
 
@@ -53,28 +55,18 @@ public class PanicoWidget extends AppWidgetProvider {
         }*/
 
         // Muestra la notificación
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Intent intentN = new Intent(context, ServicioWidget.class);
-            PendingIntent pendingIntent = PendingIntent.getForegroundService(context, 0, intentN, 0);
 
-            RemoteViews views = new RemoteViews(context.getPackageName(), diseno);
-            views.setOnClickPendingIntent(R.id.btnAlertarWidget, pendingIntent);
-            appWidgetManager.updateAppWidget(appWidgetId, views);
+        Intent intentN = new Intent(context, ServicioWidget.class);
+        PendingIntent pendingIntent;
 
-            //Toast.makeText(context, "Se creó en >28 ", Toast.LENGTH_LONG).show();
-            // Iniciar generar alerta
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            pendingIntent = PendingIntent.getForegroundService(context, 0, intentN, 0);
+        else
+            pendingIntent = PendingIntent.getService(context, 0, intentN, 0);
 
-        } else {
-            Intent intentN = new Intent(context, ServicioWidget.class);
-            PendingIntent pendingIntent = PendingIntent.getService(context, 0, intentN, 0);
-
-            RemoteViews views = new RemoteViews(context.getPackageName(), diseno);
-            views.setOnClickPendingIntent(R.id.btnAlertarWidget, pendingIntent);
-            appWidgetManager.updateAppWidget(appWidgetId, views);
-
-            //Toast.makeText(context, "Se creó en <28 ", Toast.LENGTH_LONG).show();
-
-        }
+        RemoteViews views = new RemoteViews(context.getPackageName(), diseno);
+        views.setOnClickPendingIntent(R.id.btnAlertarWidget, pendingIntent);
+        appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
     @Override

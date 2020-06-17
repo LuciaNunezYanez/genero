@@ -76,10 +76,10 @@ public class ServicioWidget extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         iniciarProceso();
-        /*if (Build.VERSION.SDK_INT >=  Build.VERSION_CODES.O)
+       // if (Build.VERSION.SDK_INT >=  Build.VERSION_CODES.O)
             crearNotificacionPersistente(getApplicationContext(), ServicioWidget.class, CHANNEL_ID, "Botón de pánico activado", "Botón activado desde el widget. Enviando multimedia..", R.drawable.ic_notification_siren_2, "Descripción", ID_SERVICIO_WIDGET_CREAR_REPORTE);
-        else */
-            Notificaciones.crearNotificacionNormal(getApplicationContext(), CHANNEL_ID, R.drawable.ic_color_error, "Botón de pánico activado", "Botón activado desde el widget. Enviando multimedia..", ID_SERVICIO_WIDGET);
+        //else
+         //   Notificaciones.crearNotificacionNormal(getApplicationContext(), CHANNEL_ID, R.drawable.ic_color_error, "Botón de pánico activado", "Botón activado desde el widget. Enviando multimedia..", ID_SERVICIO_WIDGET);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -132,7 +132,21 @@ public class ServicioWidget extends Service {
             Log.d(TAG,"Se inicio servicio para API 26+ - Desde servicio prueba!");
 
         } else{
-            // Mostrar el otro tipo de notificación
+            Log.d(TAG,"XXXXXXXXXXX SERVICIO PARA NO MENOR A OREO!");
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, clase), 0);
+
+            // Crear notificación de servicio activo
+            Notification notification =
+                    new Notification.Builder(context)
+                            .setColor(Color.WHITE)
+                            .setContentTitle(titulo)
+                            .setContentText(mensaje)
+                            .setSmallIcon(icono)
+                            .setColor(Color.GRAY)
+                            .setContentIntent(pendingIntent)
+                            .build();
+
+            startForeground(idServicio, notification);
         }
     }
 
@@ -406,6 +420,8 @@ public class ServicioWidget extends Service {
                     // Obtener el numero de ciclos para comenzar a tomar las fotografias
                     PreferencesCiclo preferencesCiclo = new PreferencesCiclo();
                     ciclo = preferencesCiclo.obtenerCicloFotografias(getApplicationContext());
+                    if (puedoFinalizar(context))
+                        stopSelf();
                     /*if(ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
                         iniciarProcesoFotografias();
                     } else {
@@ -445,6 +461,8 @@ public class ServicioWidget extends Service {
                     Log.d(TAG, "Error al enviar coordenadas GPS");
                 }
             }
+            if (puedoFinalizar(context))
+                stopSelf();
         }
     };
 
@@ -457,15 +475,24 @@ public class ServicioWidget extends Service {
             Log.d(TAG, "Respondió Servicio " + parametros.toString());
             if(termino){
                 terminarGrabacionAudio();
-                boolean terminoAudio = Utilidades.isMyServiceRunning(getApplicationContext(), AudioService.class);
-                Log.d(TAG, "TERMINÓ AUDIO SERVICE? " + terminoAudio);
             } else {
                 Log.d(TAG, "Termino mal Audio");
                 terminarGrabacionAudio();
                 //eliminarEscuchadorAudio();
             }
+            if (puedoFinalizar(context))
+                stopSelf();
         }
     };
+
+    private static Boolean puedoFinalizar(Context context){
+        if(!Utilidades.isMyServiceRunning(context, AudioService.class) && !Utilidades.isMyServiceRunning(context, GPSService.class)){
+            //Notificaciones.crearNotificacionNormal(context, CHANNEL_ID, R.drawable.ic_color_error, "Botón de pánico activado", "¡Se envió multimedia!", ID_SERVICIO_WIDGET);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
 

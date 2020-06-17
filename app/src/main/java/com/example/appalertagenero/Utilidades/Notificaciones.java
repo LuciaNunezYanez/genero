@@ -38,7 +38,6 @@ public class Notificaciones {
         builder.setColor(Color.GRAY);
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         builder.setLights(Color.MAGENTA, 1000, 1000);
-        builder.setVibrate(new long[] {1000, 1000, 1000, 1000, 1000});
         builder.setDefaults(Notification.DEFAULT_SOUND);
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);

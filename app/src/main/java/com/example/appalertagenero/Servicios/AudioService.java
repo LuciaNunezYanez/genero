@@ -254,30 +254,24 @@ public class AudioService extends Service  {
             AudioSavePathInDevice = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + nombreAudio + "_" + posicionParaGuardar + "." + EXTENSION_AUDIO;
             Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 1: " + posicionParaGuardar);
 
-            if(mediaRecorder == null){
-                mediaRecorder = new MediaRecorder();
-                mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                // mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                // mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-                mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-                mediaRecorder.setMaxDuration(DURACION_AUDIO);
-                mediaRecorder.setOutputFile(AudioSavePathInDevice);
-                mediaRecorder.setOnInfoListener(this);
-            } else {
-                Log.d(TAG, "Media Recorder NO es NULL");
-            }
-            Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 2: " + posicionParaGuardar);
+            mediaRecorder = new MediaRecorder();
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            // mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            // mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
-
+            mediaRecorder.setMaxDuration(DURACION_AUDIO);
+            mediaRecorder.setOutputFile(AudioSavePathInDevice);
+            mediaRecorder.setOnInfoListener(this);
             Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 3: " + posicionParaGuardar);
 
             try {
-                Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 4: " + posicionParaGuardar);
+                //Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 4: " + posicionParaGuardar);
                 mediaRecorder.prepare();
-                Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 5: " + posicionParaGuardar);
+                //Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 5: " + posicionParaGuardar);
                 mediaRecorder.start();
-                Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 6: " + posicionParaGuardar);
+                //Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 6: " + posicionParaGuardar);
 
                 fechas[posicionParaGuardar] = Utilidades.obtenerFecha();
 
@@ -285,10 +279,10 @@ public class AudioService extends Service  {
             } catch (IllegalStateException e) {
                 Log.d(TAG, "(Hilo 1) Catch 1");
                 e.printStackTrace();
-                darResultados(false);
+                //darResultados(false);
             } catch (IOException e) {
                 Log.d(TAG, "(Hilo 1) Catch 2" + e.getMessage());
-                darResultados(false);
+                //darResultados(false);
                 e.printStackTrace();
             }
             Log.d(TAG, "(Hilo 1) (iniciarGrabacion()) Empezó grabación. Contador: " + posicionParaGuardar);
