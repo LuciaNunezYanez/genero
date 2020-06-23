@@ -21,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.appalertagenero.Clases.AdaptadorDirectorio;
+import com.example.appalertagenero.Utilidades.Utilidades;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,15 +36,6 @@ public class DirectorioActivity extends AppCompatActivity {
 
     static String TAG = "Directorio";
     static ListView lista;
-    /*static String[][] datos_directorio = {
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"},
-            {"Atención a Mujeres victimas", "Calle Cipres #123 Col Diana Laura. Victoria de Durango, Dgo. Entre Regato y Pasteur", "6189999999"}
-    };*/
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,34 +107,12 @@ public class DirectorioActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String errorResp = "Error #9: " + R.string.error_desconocido;
-
-                if (error instanceof TimeoutError) {
-                    errorResp = "Error #10: " + R.string.error_tiempo_agotado;
-                } else if (error instanceof NoConnectionError) {
-                    errorResp = "Error #10: " + R.string.error_sin_conexion;
-                } else if (error instanceof AuthFailureError) {
-                    errorResp = "Error #10: " + R.string.error_fallo_autenticar;
-                } else if (error instanceof ServerError) {
-                    errorResp = "Error #10: " + R.string.error_servidor;
-                } else if (error instanceof NetworkError) {
-                    errorResp = "Error #10: " + R.string.error_red;
-                } else if (error instanceof ParseError) {
-                    errorResp = "Error #10: " + R.string.error_parseo;
-                }
-
-                // Toast.makeText(context, errorResp, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, errorResp);
+                Toast.makeText(context,  Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
+                Log.e(TAG,  Utilidades.tipoErrorVolley(error));
                 requestQueue.stop();
             }
         });
         requestQueue.add(requestGetDirectorio);
-    }
-
-
-    private void initList(){
-
-
     }
 
     public static HashMap<String, String> createEmployee(String name, String number){

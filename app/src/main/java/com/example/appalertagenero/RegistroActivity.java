@@ -19,6 +19,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -36,6 +37,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.androidhiddencamera.HiddenCameraUtils;
+import com.example.appalertagenero.Clases.AdaptadorDirectorio;
 import com.example.appalertagenero.Utilidades.Utilidades;
 
 import org.json.JSONArray;
@@ -58,6 +60,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
     EditText txtCorreo, txtNombres, txtPaterno, txtMaterno, dateNacimiento, areaPadecimientos, txtTelefonoM, areaAlergias;
     Spinner spSexo, spSangre;
     Button btnSiguiente, btnFechaNac;
+    TextView lblPersonales;
 
     // Components Layout Domicilio
     LinearLayout linearDomicilio;
@@ -80,8 +83,13 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
     static List<String> misIDsLocalidades = new ArrayList<>();
     static List<String> misLocalidades = new ArrayList<>();
 
-    static String TAG = "Alerta de género";
+    static String TAG = "RegistroActivity";
+    static Boolean editar = false;
 
+    // Variables para edicion
+    int id_usuario = 0;
+    static String nombre_municipio = "";
+    static String nombre_localidad = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +99,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         linearDomicilio = findViewById(R.id.linearDomiclio);
 
         // Componentes
+        lblPersonales = findViewById(R.id.lblPersonales);
         txtCorreo = findViewById(R.id.txtCorreo);
         txtNombres = findViewById(R.id.txtNombres);
         txtPaterno = findViewById(R.id.txtPaterno);
@@ -147,38 +156,25 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
 
                 stSangre = spSangre.getSelectedItem().toString();
 
-                //Toast.makeText(getApplicationContext(), stNombres + " " + stPaterno + " " + stMaterno + " " + stNacimiento + " " +
-                  //      stPadecimientos + " " + stTelefonoM + " " + stAlergias + " " + stSexo + " " + stSangre, Toast.LENGTH_LONG).show();
-
                 if(stSangre.equals("Seleccionar"))
                     stSangre = "";
-
                 if(!Utilidades.validEmail(stCorreo)) {
                     Toast.makeText(getApplicationContext(), "Correo electrónico inválido", Toast.LENGTH_LONG).show();
-
                 } else if( stNombres.length() < 3 || stPaterno.length() < 3) {
                     Toast.makeText(getApplicationContext(), "Nombre(s) o apellido paterno inválido", Toast.LENGTH_LONG).show();
-
                 } else if(stSexo.equals("")) {
                     Toast.makeText(getApplicationContext(), "Seleccione sexo por favor", Toast.LENGTH_LONG).show();
-
                 } else if(stTelefonoM.length() != 10 || !Utilidades.validPhone(stTelefonoM)) {
-
                     try {
-
                         int tel = Integer.parseInt(stTelefonoM);
                         Toast.makeText(getApplicationContext(), "Teléfono inválido, solo 10 digitos", Toast.LENGTH_LONG).show();
-
                     } catch (Exception e){
                         Toast.makeText(getApplicationContext(), "No son puros números", Toast.LENGTH_LONG).show();
                     }
-
                 } else {
                     linearPersonales.setVisibility(View.GONE);
                     linearDomicilio.setVisibility(View.VISIBLE);
-                    // Toast.makeText(getApplicationContext(), "Datos personales completos", Toast.LENGTH_LONG).show();
                 }
-
             }
         });
 
@@ -193,40 +189,43 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         btnFinalizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                stCalle = txtCalle.getText().toString();
-                stNumeroExt = txtNumeroExt.getText().toString();
-                stColonia = txtColonia.getText().toString();
-                String cp = txtCodigoP.getText().toString();
+                if(editar) { // Editar datos
+                } else { // Agregar datos
+                    stCalle = txtCalle.getText().toString();
+                    stNumeroExt = txtNumeroExt.getText().toString();
+                    stColonia = txtColonia.getText().toString();
+                    String cp = txtCodigoP.getText().toString();
 
-                stCalle1 = txtCalle1.getText().toString();
-                stCalle2 = txtCalle2.getText().toString();
-                stReferencia = areaReferencia.getText().toString();
+                    stCalle1 = txtCalle1.getText().toString();
+                    stCalle2 = txtCalle2.getText().toString();
+                    stReferencia = areaReferencia.getText().toString();
 
-                if(stCalle.length() < 3){
-                    Toast.makeText(getApplicationContext(), "Calle incorrecta", Toast.LENGTH_LONG).show();
-                } else if( stNumeroExt.length() == 0){
-                    Toast.makeText(getApplicationContext(), "Número exterior incorrecto", Toast.LENGTH_LONG).show();
-                } else if( stColonia.length() < 3){
-                    Toast.makeText(getApplicationContext(), "Colonia incorrecta", Toast.LENGTH_LONG).show();
-                } else if( cp.length() > 0 && cp.length() < 5){
-                    Toast.makeText(getApplicationContext(), "El código postal debe contener 5 dígitos", Toast.LENGTH_LONG).show();
-                } else if( spMunicipio.getSelectedItem() == null || spLocalidad.getSelectedItem() == null){
-                    Toast.makeText(getApplicationContext(), "Municipio y/o localidad inválida", Toast.LENGTH_LONG).show();
-                } else if( stReferencia.length() < 10 || areaReferencia.getText() == null || areaReferencia.getText().toString().length() < 10){
-                    Toast.makeText(getApplicationContext(), "Referencia muy corta", Toast.LENGTH_SHORT).show();
-                } else {
-                    if(cp.length() == 5 || cp.length() == 0){
-                        try {
-                            if(cp.length() > 0)
-                                codigoP = Integer.parseInt(cp);
-                            Toast.makeText(getApplicationContext(), "Registraré usuario: " + codigoP, Toast.LENGTH_SHORT).show();
-                            stEstado = spEstado.getSelectedItem().toString();
-                            stMunicipio = spMunicipio.getSelectedItem().toString();
-                            stLocalidad = spLocalidad.getSelectedItem().toString();
-                            // Registrar usuario
-                            crearUsuario();
-                        } catch (Exception e){
-                            Toast.makeText(getApplicationContext(), "El código postal debe contener solo números", Toast.LENGTH_LONG).show();
+                    if(stCalle.length() < 3){
+                        Toast.makeText(getApplicationContext(), "Calle incorrecta", Toast.LENGTH_LONG).show();
+                    } else if( stNumeroExt.length() == 0){
+                        Toast.makeText(getApplicationContext(), "Número exterior incorrecto", Toast.LENGTH_LONG).show();
+                    } else if( stColonia.length() < 3){
+                        Toast.makeText(getApplicationContext(), "Colonia incorrecta", Toast.LENGTH_LONG).show();
+                    } else if( cp.length() > 0 && cp.length() < 5){
+                        Toast.makeText(getApplicationContext(), "El código postal debe contener 5 dígitos", Toast.LENGTH_LONG).show();
+                    } else if( spMunicipio.getSelectedItem() == null || spLocalidad.getSelectedItem() == null){
+                        Toast.makeText(getApplicationContext(), "Municipio y/o localidad inválida", Toast.LENGTH_LONG).show();
+                    } else if( stReferencia.length() < 10 || areaReferencia.getText() == null || areaReferencia.getText().toString().length() < 10){
+                        Toast.makeText(getApplicationContext(), "Referencia muy corta", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if(cp.length() == 5 || cp.length() == 0){
+                            try {
+                                if(cp.length() > 0)
+                                    codigoP = Integer.parseInt(cp);
+                                Toast.makeText(getApplicationContext(), "Registraré usuario: " + codigoP, Toast.LENGTH_SHORT).show();
+                                stEstado = spEstado.getSelectedItem().toString();
+                                stMunicipio = spMunicipio.getSelectedItem().toString();
+                                stLocalidad = spLocalidad.getSelectedItem().toString();
+                                // Registrar usuario
+                                crearUsuario();
+                            } catch (Exception e){
+                                Toast.makeText(getApplicationContext(), "El código postal debe contener solo números", Toast.LENGTH_LONG).show();
+                            }
                         }
                     }
                 }
@@ -247,6 +246,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                 misIDsLocalidades.clear();
                 spLocalidad.setAdapter( new ArrayAdapter<>(getApplicationContext(), R.layout.custom_spinner_item, misLocalidades));
                 getLocalidades(getApplicationContext(), Integer.parseInt(misIDsMunicipios.get(arg2)));
+
             }
 
             @Override
@@ -254,6 +254,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                 id_loc_select = 0;
             }
         });
+
 
         spLocalidad.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -266,7 +267,86 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
             }
         });
 
+        // Para editar la información
+        if(getIntent().getExtras() != null){
+            if(getIntent().getExtras().containsKey("id")) {
+                id_usuario = getIntent().getExtras().getInt("id");
+                if (id_usuario > 0){
+                    editar = true;
+                    btnFinalizar.setText("Actualizar");
+                    lblPersonales.setText("EDITA TUS DATOS\nPERSONALES");
+                    txtCorreo.setText(getIntent().getExtras().getString("correo"));
+                    txtCorreo.setEnabled(false);
+                    txtCorreo.setFocusable(false);
+
+                    // Obtener los datos del usuario
+                    getUsuario(id_usuario);
+                } else {
+                    editar = false;
+                }
+            }
+        }
         getMunicipios(getApplicationContext(), 10); // 10: Durango
+
+    }
+
+    public void getUsuario(int id_usuario) { // GET http://localhost:8888/usuariocomercio/completo/104
+        StringRequest requestGetUsuario;
+        String URL = Constantes.URL + "/usuariocomercio/completo/" + id_usuario;
+
+        final RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        requestGetUsuario = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try{
+                    JSONObject json = new JSONObject(response);
+                    Boolean OK = json.getBoolean("ok");
+                    if(OK){
+                        JSONObject json_u = json.getJSONObject("resp");
+                        txtNombres.setText(json_u.getString("nombres_usuarios_app"));
+                        txtPaterno.setText(json_u.getString("apell_pat"));
+                        txtMaterno.setText(json_u.getString("apell_mat"));
+                        String ff[] = json_u.getString("fecha_nacimiento").substring(0, 10).split("-");
+                        dateNacimiento.setText(ff[2]+"/"+ff[1]+"/"+ff[0]);
+                        String s = "";
+                        if(json_u.getString("sexo_app").equals("F")) s = "Femenino";
+                        if(json_u.getString("sexo_app").equals("M")) s = "Masculino";
+                        if(json_u.getString("sexo_app").equals("D")) s = "Desconocido";
+                        if(json_u.getString("sexo_app").equals("")) s = "Seleccionar";
+                        spSexo.setSelection(Utilidades.obtenerPosicionItem(spSexo, s));
+                        areaPadecimientos.setText(json_u.getString("padecimientos"));
+                        txtTelefonoM.setText(json_u.getString("tel_movil"));
+                        areaAlergias.setText(json_u.getString("alergias"));
+                        spSangre.setSelection(Utilidades.obtenerPosicionItem(spSangre, json_u.getString("tipo_sangre")));
+
+                        txtCalle.setText(json_u.getString("calle"));
+                        txtNumeroExt.setText(json_u.getString("numero"));
+                        txtColonia.setText(json_u.getString("colonia"));
+                        txtCodigoP.setText(json_u.getString("cp"));
+                        nombre_municipio = json_u.getString("nombre_municipio");
+                        nombre_localidad = json_u.getString("nombre_localidad");
+                        txtCalle1.setText(json_u.getString("entre_calle_1"));
+                        txtCalle2.setText(json_u.getString("entre_calle_2"));
+                        areaReferencia.setText(json_u.getString("fachada"));
+
+                    }
+                } catch (Exception e){
+
+                }
+                requestQueue.stop();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(),  Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
+                requestQueue.stop();
+            }
+        });
+        requestQueue.add(requestGetUsuario);
+    }
+
+    public void editarUsuario(){
 
     }
 
@@ -326,21 +406,6 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                             object = new JSONObject(json);
                             Boolean ok = object.getBoolean("ok");
                             if (ok) {
-                                Log.d(TAG, "Ok = TRUE");
-                                /*if (object.has("resultado")) {
-                                    final String resultado = object.getString("resultado");
-                                    if (resultado.equals("Código de activación abierto con éxito")) {
-                                        Toast.makeText(getApplicationContext(), "¡BIENVENIDO! \n" + resultado, Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), resultado, Toast.LENGTH_LONG).show();
-                                    }
-                                }*/
-
-                                /*String token = "S";
-                                if(object.has("token")){
-                                    token = object.getString("token");
-                                }*/
-
                                 if (object.has("resultado")) {
                                     Log.d(TAG, "Resultado = TRUE");
                                     // Obtener cada dato de comercio
@@ -414,16 +479,12 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                                     } else {
                                         Log.d(TAG, "Resultado inválido #2");
                                         Toast.makeText(getApplicationContext(), "Error al procesar su solicitud, reintente más tarde y valide el acceso a internet", Toast.LENGTH_LONG).show();
-                                        // No contiene una respuesta válida
                                     }
-
 
                                 } else {
                                     // No viene comercio por que el codigo está mal
-                                    Log.d(TAG, "Resultado inválido #3");
                                     Toast.makeText(getApplicationContext(), "Error al procesar solicitud de registro", Toast.LENGTH_SHORT).show();
                                 }
-
                             } else {
                                 Log.d(TAG, "Error al traer los datos" + object.optJSONObject("error").toString());
                                 (Toast.makeText(getApplicationContext(), "Error al procesar registro" + object.optJSONObject("error").toString(), Toast.LENGTH_SHORT)).show();
@@ -432,35 +493,13 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                             e.printStackTrace();
                         }
 
-                        /*if (tieneAcceso) {
-                            activarPermisoAlmacWrite();
-                        } else {
-                            //(Toast.makeText(getApplicationContext(), "Acceso denegado #1", Toast.LENGTH_SHORT)).show();
-                        }*/
                         requestQueue.stop();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        //Log.d(TAG, );
-                        Log.e(TAG, error.toString());
-
-                        if (error instanceof TimeoutError) {
-                            (Toast.makeText(getApplicationContext(), "Timeout", Toast.LENGTH_SHORT)).show();
-                        } else if (error instanceof NoConnectionError) {
-                            (Toast.makeText(getApplicationContext(), "Sin conexión", Toast.LENGTH_SHORT)).show();
-                        } else if (error instanceof AuthFailureError) {
-                            (Toast.makeText(getApplicationContext(), "Falló al autenticar", Toast.LENGTH_SHORT)).show();
-                        } else if (error instanceof ServerError) {
-                            (Toast.makeText(getApplicationContext(), "Error de servidor", Toast.LENGTH_SHORT)).show();
-                        } else if (error instanceof NetworkError) {
-                            (Toast.makeText(getApplicationContext(), "Error de Red", Toast.LENGTH_SHORT)).show();
-                        } else if (error instanceof ParseError) {
-                            (Toast.makeText(getApplicationContext(), "Error de parseo", Toast.LENGTH_SHORT)).show();
-                        } else {
-                            (Toast.makeText(getApplicationContext(), "Acceso denegado #2", Toast.LENGTH_SHORT)).show();
-                        }
+                        Toast.makeText(getApplicationContext(), "E#11A " + Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
                     }
                 }
         ) {
@@ -481,6 +520,8 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         };
         requestQueue.add(getRequest);
     }
+
+    // SPINNERS
 
     public static void getMunicipios(final Context context, int id_estado){
 
@@ -509,6 +550,10 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                             misIDsMunicipios.add(ids_municipios.getString(i));
                         }
                         spMunicipio.setAdapter(new ArrayAdapter<>(context, R.layout.custom_spinner_item, misMunicipios));
+                        if(editar){
+                            Log.d(TAG, nombre_municipio);
+                            spMunicipio.setSelection(Utilidades.obtenerPosicionItem(spMunicipio, nombre_municipio));
+                        }
                     } catch (JSONException e) {
                         Toast.makeText(context, "Error al obtener los municipios" + e.toString(), Toast.LENGTH_SHORT).show();
                     }
@@ -517,29 +562,10 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    String errorResp = "Error #11: Desconocido";
-
-                    if (error instanceof TimeoutError) {
-                        errorResp = "Error #11: Verifique su conexión para proceder con el registro";
-                    } else if (error instanceof NoConnectionError) {
-                        errorResp = "Error #11: Sin conexión con el servidor";
-                    } else if (error instanceof AuthFailureError) {
-                        errorResp = "Error #11: Fallo al autenticar";
-                    } else if (error instanceof ServerError) {
-                        errorResp = "Error #11: Servidor";
-                    } else if (error instanceof NetworkError) {
-                        errorResp = "Error #11: Red";
-                    } else if (error instanceof ParseError) {
-                        errorResp = "Error #11: Parseo";
-                    }
-
-                    Log.e(TAG, errorResp);
-                    Toast.makeText(context, errorResp, Toast.LENGTH_LONG).show();
-
+                    Toast.makeText(context, "E#11 " + Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
                     requestQueue.stop();
                 }
             });
-
             requestQueue.add(requestGetMunicipios);
         } catch (Exception e){
             Toast.makeText(context, "Excepción", Toast.LENGTH_LONG).show();
@@ -570,6 +596,9 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                         misIDsLocalidades.add(ids_localidades.getString(i));
                     }
                     spLocalidad.setAdapter( new ArrayAdapter<>(context, R.layout.custom_spinner_item, misLocalidades));
+                    if(editar){
+                        spLocalidad.setSelection(Utilidades.obtenerPosicionItem(spLocalidad, nombre_localidad));
+                    }
                 }
                 catch(JSONException e){
                     Toast.makeText(context, "Error en municipios"+e.toString(), Toast.LENGTH_SHORT).show();
@@ -579,22 +608,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String errorResp = "Error #12: " + R.string.error_desconocido;
-
-                if (error instanceof TimeoutError) {
-                    errorResp = "Error #12: " + R.string.error_tiempo_agotado;
-                } else if (error instanceof NoConnectionError) {
-                    errorResp = "Error #12: " + R.string.error_sin_conexion;
-                } else if (error instanceof AuthFailureError) {
-                    errorResp = "Error #12: " + R.string.error_fallo_autenticar;
-                } else if (error instanceof ServerError) {
-                    errorResp = "Error #12: " + R.string.error_servidor;
-                } else if (error instanceof NetworkError) {
-                    errorResp = "Error #12: " + R.string.error_red;
-                } else if (error instanceof ParseError) {
-                    errorResp = "Error #12: " + R.string.error_parseo;
-                }
-                Log.e(TAG, errorResp);
+                Toast.makeText(context, "E#12 " + Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
                 requestQueue.stop();
             }
         });
@@ -612,6 +626,8 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         );
         datePickerDialog.show();
     }
+
+    // PERMISOS
 
     @Override
     public void onDateSet(DatePicker datePicker, int anio, int mes, int dia) {

@@ -6,6 +6,16 @@ import android.graphics.Bitmap;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -67,6 +77,35 @@ public class Utilidades {
             }
         }
         return false;
+    }
+
+    //Método para obtener la posición de un ítem del spinner
+    public static int obtenerPosicionItem(Spinner spinner, String valor) {
+        int posicion = 0;
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equals(valor)) {
+                posicion = i;
+            }
+        }
+        return posicion;
+    }
+
+    public static String tipoErrorVolley(VolleyError error){
+        if (error instanceof TimeoutError) {
+            return "Problema con el servidor";
+        } else if (error instanceof NoConnectionError) {
+            return "Sin conexión";
+        } else if (error instanceof AuthFailureError) {
+            return "Falló al autenticar";
+        } else if (error instanceof ServerError) {
+            return "Error de servidor";
+        } else if (error instanceof NetworkError) {
+            return "Error de Red";
+        } else if (error instanceof ParseError) {
+            return "Error de parseo";
+        } else {
+            return "Error desconocido";
+        }
     }
 
     // Validaciones

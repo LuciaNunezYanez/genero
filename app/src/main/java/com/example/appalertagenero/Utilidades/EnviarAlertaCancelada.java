@@ -30,9 +30,6 @@ public class EnviarAlertaCancelada
     static String TAG = "AlertaCancelada";
 
     public static void enviarAlertaCancelada(final Context context, int id_reporte_cancelar, int nuevo_estatus){
-
-        // final Boolean seCancelo = false;
-
         StringRequest requestAlertaCancelada;
         String URL = Constantes.URL + "/activaciones/" + id_reporte_cancelar;
 

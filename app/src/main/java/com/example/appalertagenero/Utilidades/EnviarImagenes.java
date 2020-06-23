@@ -32,11 +32,11 @@ public class EnviarImagenes {
     public static Boolean enviarImagenFrontal(final Context context, String IMAGEN_FRONTAL, String FECHA_FRONTAL, int reporteCreado){
         //Log.d(TAG, "Enviare imagen frontal" + IMAGEN_FRONTAL.length());
 
-        try {
+        /*try {
             Thread.sleep(5000);
         } catch (InterruptedException e){
             Log.d(TAG, "Excepcion enviar imagenes hilo");
-        }
+        }*/
 
         StringRequest requestFrontal;
         if(reporteCreado >=1 ){
@@ -69,25 +69,9 @@ public class EnviarImagenes {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    String errorResp = "Error #4: Desconocido";
-
-                    if (error instanceof TimeoutError) {
-                        errorResp = "Error #4: Timeout";
-                    } else if (error instanceof NoConnectionError) {
-                        errorResp = "Error #4: Sin Conexión";
-                    } else if (error instanceof AuthFailureError) {
-                        errorResp = "Error #4: Fallo al autenticar";
-                    } else if (error instanceof ServerError) {
-                        errorResp = "Error #4: Servidor";
-                    } else if (error instanceof NetworkError) {
-                        errorResp = "Error #4: Red";
-                    } else if (error instanceof ParseError) {
-                        errorResp = "Error #4: Parseo";
-                    }
-                    Toast.makeText(context, errorResp, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,  "E#4" + Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
                     requestQueue.stop();
                     Log.e(TAG, error.toString());
-                    Log.e(TAG, errorResp);
                 }
             }) {
                 @Override
@@ -122,15 +106,12 @@ public class EnviarImagenes {
 
     public static Boolean enviarImagenTrasera(final Context context, String IMAGEN_TRASERA, String FECHA_TRASERA, int reporteCreado){
 
-        try {
+        /*try {
             Thread.sleep(5000);
         } catch (InterruptedException e){
             Log.d(TAG, "Excepcion enviar imagenes hilo");
-        }
-
-
+        }*/
         StringRequest requestTrasera;
-
         if(reporteCreado >=1 ){
             // COMIENZA HILO PARA ENVIAR IMAGEN FRONTAL
             Log.d(TAG, "Comienza hilo para enviar imagen trasera");

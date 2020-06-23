@@ -29,6 +29,7 @@
         <!-- <item name = "android:thumb">@drawable/ic_happy_foreground</item> -->
         <item name="colorControlActivated">@color/colorVerde</item>
     </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
@@ -36,4 +37,13 @@
     <style name="mySpinnerItemStyle" parent="Base.Widget.AppCompat.Spinner">
         <item name="android:textColor">@color/colorRosaGuinda</item>
     </style>
+
+    <style name="AppTheme.NoActionBar.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

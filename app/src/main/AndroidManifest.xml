@@ -19,9 +19,26 @@
         android:roundIcon="@drawable/ic_alerta_g"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
-
         android:usesCleartextTraffic="true">
-        <activity android:name=".ViolentometroActivity"></activity>
+        <activity
+            android:name=".NuevaContrasenaActivity"
+            android:label="@string/title_activity_nueva_contrasena"
+            android:theme="@style/AppTheme.NoActionBar.NoActionBar"></activity>
+        <activity
+            android:name=".RecuperacionActivity"
+            android:label="@string/title_activity_recuperacion"
+            android:theme="@style/AppTheme.NoActionBar.NoActionBar" />
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.NoActionBar.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ViolentometroActivity" />
 
         <receiver
             android:name=".Broadcast.BotonazoReceiver"
@@ -70,13 +87,7 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>
