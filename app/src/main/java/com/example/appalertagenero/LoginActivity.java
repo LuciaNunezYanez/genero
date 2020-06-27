@@ -56,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), RegistroActivity.class);
                 intent.putExtra("id",0);
+                intent.putExtra("accion", "nuevo");
                 startActivity(intent);
             }
         });
@@ -70,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void iniciarSesion(final String correo, String contrasena){
+    public void iniciarSesion(final String correo, final String contrasena){
         final RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         String URL = Constantes.URL + "/login/app/";
 
@@ -95,6 +96,8 @@ public class LoginActivity extends AppCompatActivity {
                                 Intent intent = new Intent(getApplicationContext(), RegistroActivity.class);
                                 intent.putExtra("id", response.getInt("id"));
                                 intent.putExtra("correo", correo);
+                                intent.putExtra("contrasena", contrasena);
+                                intent.putExtra("accion", "login");
                                 startActivity(intent);
                             }
                         } catch (Exception e){

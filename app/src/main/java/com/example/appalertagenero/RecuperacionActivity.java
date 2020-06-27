@@ -57,7 +57,7 @@ public class RecuperacionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!Utilidades.validEmail(txtCorreo.getText().toString())) {
-                    Toast.makeText(getApplicationContext(), "Correo electrónico inválido.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "¡El correo electrónico es inválido!", Toast.LENGTH_SHORT).show();
                 } else
                     generarCodigo(txtCorreo.getText().toString());
             }
@@ -66,9 +66,9 @@ public class RecuperacionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!Utilidades.validEmail(txtCorreo.getText().toString())) {
-                    Toast.makeText(getApplicationContext(), "Correo electrónico inválido.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "¡El correo electrónico es inválido!", Toast.LENGTH_SHORT).show();
                 } else if ( txtCodigo.getText().toString().length() != 8 ){
-                    Toast.makeText(getApplicationContext(), "El código de activación debe contener 8 dígitos.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "¡El código de activación debe contener 8 dígitos!", Toast.LENGTH_SHORT).show();
                 } else {
                     validarCodigo(txtCorreo.getText().toString(), txtCodigo.getText().toString());
                 }
@@ -124,7 +124,7 @@ public class RecuperacionActivity extends AppCompatActivity {
             };
             requestQueue.add(getRequest);
         } else {
-            Toast.makeText(getApplicationContext(), "Campo de correo vacio", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "¡El correo electrónico es inválido!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -151,6 +151,7 @@ public class RecuperacionActivity extends AppCompatActivity {
                                     Intent intent = new Intent(getApplicationContext(), NuevaContrasenaActivity.class);
                                     intent.putExtra("correo", correo);
                                     startActivity(intent);
+                                    RecuperacionActivity.this.finish();
                                 }
                             }
                             catch(JSONException e){
@@ -182,7 +183,7 @@ public class RecuperacionActivity extends AppCompatActivity {
             };
             requestQueue.add(getRequest);
         } else {
-            Toast.makeText(getApplicationContext(), "Campo de correo vacio", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "¡El correo electrónico es inválido!", Toast.LENGTH_SHORT).show();
         }
     }
 }

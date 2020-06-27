@@ -7,6 +7,7 @@ public class Constantes {
     // 3,600,000 1 hora
 
     public static final String CHANNEL_ID = "BOTON_ALERTA_GENERO";
+    public static String NOMBRE_APP = "Alerta de género";
     public static final int PRIORITY_MAX = 2;
     public static final int ID_SERVICIO_PANICO = 100;
     public static final int ID_SERVICIO_AUDIO = 102;

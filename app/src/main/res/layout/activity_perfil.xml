@@ -33,7 +33,7 @@
         android:layout_height="2dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:background="@color/colorRosaClaro"
+        android:background="#80F76BB7"
         android:orientation="vertical"></LinearLayout>
 
     <ScrollView

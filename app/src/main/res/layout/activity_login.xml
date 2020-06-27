@@ -31,6 +31,7 @@
         android:hint="Correo electrónico"
         android:inputType="textEmailAddress"
         android:textColor="@color/colorRosaGuinda"
+        android:maxLength="100"
         android:textSize="20sp" />
 
     <EditText
@@ -43,6 +44,7 @@
         android:gravity="center"
         android:hint="Contraseña"
         android:inputType="textPassword"
+        android:maxLength="20"
         android:textColor="@color/colorRosaGuinda"
         android:textSize="20sp" />
 

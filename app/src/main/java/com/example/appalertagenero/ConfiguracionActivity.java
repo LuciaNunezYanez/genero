@@ -3,6 +3,7 @@ package com.example.appalertagenero;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
@@ -43,6 +44,8 @@ public class ConfiguracionActivity extends AppCompatActivity {
         switchServicioActivo = findViewById(R.id.switchServicioActivo);
         btnSaveCiclo = findViewById(R.id.iBtnGuardarCiclo);
         txtNoCiclo = findViewById(R.id.txtNoCiclo);
+        //txtNoCiclo.setFocusable(false);
+        //txtNoCiclo.setEnabled(true);
 
         obtenerPreferenciasNotificacion();
         switchServicioActivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -151,37 +154,33 @@ public class ConfiguracionActivity extends AppCompatActivity {
 
     private void permisoAlmacWrite(){
         if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
-            btnAlmacWrite.setBackgroundColor(Color.rgb(65, 174, 71));
+            btnAlmacWrite.setBackgroundTintList(ContextCompat.getColorStateList(ConfiguracionActivity.this, R.color.colorVerdeGob));
         } else {
-            btnAlmacWrite.setBackgroundColor(Color.rgb(213, 34, 37));
-            Log.e(TAG, "No tiene permisos Write");
+            btnAlmacWrite.setBackgroundTintList(ContextCompat.getColorStateList(ConfiguracionActivity.this, R.color.colorRojoClaro));
         }
     }
 
     private void permisoCam(){
         if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
-            btnCam.setBackgroundColor(Color.rgb(65, 174, 71));
+            btnCam.setBackgroundTintList(ContextCompat.getColorStateList(ConfiguracionActivity.this, R.color.colorVerdeGob));
         } else {
-            btnCam.setBackgroundColor(Color.rgb(213, 34, 37));
-            Log.e(TAG, "No tiene permisos camara");
+            btnCam.setBackgroundTintList(ContextCompat.getColorStateList(ConfiguracionActivity.this, R.color.colorRojoClaro));
         }
     }
 
     private void permisoMicrof(){
         if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
-            btnMicrof.setBackgroundColor(Color.rgb(65, 174, 71));
+            btnMicrof.setBackgroundTintList(ContextCompat.getColorStateList(ConfiguracionActivity.this, R.color.colorVerdeGob));
         } else {
-            btnMicrof.setBackgroundColor(Color.rgb(213, 34, 37));
-            Log.e(TAG, "No tiene permisos microfono");
+            btnMicrof.setBackgroundTintList(ContextCompat.getColorStateList(ConfiguracionActivity.this, R.color.colorRojoClaro));
         }
     }
 
     private void permisoUbic(){
         if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            btnUbic.setBackgroundColor(Color.rgb(65, 174, 71));
+            btnUbic.setBackgroundTintList(ContextCompat.getColorStateList(ConfiguracionActivity.this, R.color.colorVerdeGob));
         } else {
-            btnUbic.setBackgroundColor(Color.rgb(213, 34, 37));
-            Log.e(TAG, "No tiene permisos ubicacion");
+            btnUbic.setBackgroundTintList(ContextCompat.getColorStateList(ConfiguracionActivity.this, R.color.colorRojoClaro));
         }
     }
 

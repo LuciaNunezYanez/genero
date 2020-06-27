@@ -65,7 +65,7 @@ public class NuevaContrasenaActivity extends AppCompatActivity {
         });
     }
 
-    public void cambiarContrasena(final String correo, String contrasena){
+    public void cambiarContrasena(final String correo, final String contrasena){
         StringRequest requestCambiarContr;
         String URL = Constantes.URL + "/recuperar/cc";
 
@@ -91,7 +91,10 @@ public class NuevaContrasenaActivity extends AppCompatActivity {
                         Intent intent = new Intent(getApplicationContext(), RegistroActivity.class);
                         intent.putExtra("id", obj.getInt("id"));
                         intent.putExtra("correo", correo);
+                        intent.putExtra("accion", "recuperacion");
+                        intent.putExtra("contrasena", contrasena);
                         startActivity(intent);
+                        NuevaContrasenaActivity.this.finish();
                     }
                 } catch (Exception e){
                     Toast.makeText(getApplicationContext(), "E#14 Respuesta inválida del servidor", Toast.LENGTH_SHORT).show();

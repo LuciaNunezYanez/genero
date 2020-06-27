@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             idComercio = preferences.getInt("comercio" ,0);
             idUsuario = preferences.getInt("usuario", 0);
         } else {
-            Intent intent = new Intent(MainActivity.this, RegistroActivity.class);
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             MainActivity.this.finish();
         }
@@ -238,21 +238,18 @@ public class MainActivity extends AppCompatActivity {
                                 if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                                     comenzarGPS(context);
                                 } else {
-                                    //Toast.makeText(context, "No tiene permisos GPS", Toast.LENGTH_SHORT).show();
                                     Log.e(TAG, "No tiene permisos GPS");
                                 }
 
                                 if(ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
                                     comenzarGrabacionAudio(context);
                                 } else {
-                                    //Toast.makeText(context, "No tiene permisos de audio", Toast.LENGTH_SHORT).show();
                                     Log.e(TAG, "No tiene permisos de audio");
                                 }
 
                                 if(ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
                                     iniciarProcesoFotografias(context);
                                 } else {
-                                    //Toast.makeText(context, "No tiene permisos de camara", Toast.LENGTH_SHORT).show();
                                     Log.e(TAG, "No tiene permisos de camara");
                                 }
                             } else {
@@ -419,7 +416,6 @@ public class MainActivity extends AppCompatActivity {
                     terminarGPS(context);
                 }
             } else if(latitud == 0.0 && longitud == 0.0){
-                //Toast.makeText(context, parametros.getString("mensaje"), Toast.LENGTH_SHORT).show();
                 terminarGPS(context);
             }
         }
@@ -562,7 +558,6 @@ public class MainActivity extends AppCompatActivity {
         btnCancelarAlerta.setBackgroundColor(Color.rgb(184, 181, 174));
     }
 
-    // Al cancelar la alerta detener el envío de archivos multimedia?
     public void cancelarAlerta(View view){
         //Cancelar el ultimo reporte encontrado.
         android.content.SharedPreferences preferences = getSharedPreferences("UltimoReporte", Context.MODE_PRIVATE);
@@ -574,7 +569,7 @@ public class MainActivity extends AppCompatActivity {
                 mostrarResultadoVista(R.drawable.ic_color_error, "¡La alerta ha sido cancelada!");
                 Toast.makeText(contextoGlobal.get(), "Cancelando alerta..", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(contextoGlobal.get(), "¡El ultimo reporte es inválido!", Toast.LENGTH_LONG).show();
+                Toast.makeText(contextoGlobal.get(), "¡No se puede cancelar el ultimo reporte!", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -595,16 +590,5 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         terminarFotografias(getApplication());
-
-        /*getApplication().stopService(new Intent(getApplication(), AudioService.class));
-
-                Intent intent = new Intent(getApplication(), AudioService.class);
-                intent.putExtra("nombreAudio", "GrabacionBotonDePanico");
-                intent.putExtra("padre", "out");
-                intent.putExtra("reporteCreado", reporteCreado);
-                getApplication().startService(intent);*/
-        //Toast.makeText(contextoGlobal.get(), "¡ON DESTROY MAIN!", Toast.LENGTH_LONG).show();
-
-
     }
 }

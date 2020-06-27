@@ -96,6 +96,30 @@
                     android:textColor="@android:color/black" />
 
                 <TextView
+                    android:id="@+id/lblNuevaContrasena"
+                    android:layout_width="match_parent"
+                    android:layout_height="37dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="bottom"
+                    android:text="Nueva contraseña: *"
+                    android:textColor="@color/colorRosaClaro"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/txtContrasenaReg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:backgroundTint="#8F8888"
+                    android:ems="10"
+                    android:inputType="textPassword"
+                    android:maxLength="20"
+                    android:textColor="@android:color/black" />
+
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="37dp"
                     android:layout_marginLeft="20dp"
@@ -348,7 +372,7 @@
                     android:backgroundTint="#4CAF50"
                     android:text="Siguiente"
                     android:textColor="#FFFF"
-                    android:textSize="18dp" />
+                    android:textSize="14dp" />
 
 
             </LinearLayout>
@@ -678,7 +702,7 @@
                         android:backgroundTint="#4CAF50"
                         android:text="Finalizar "
                         android:textColor="#FFFFFF"
-                        android:textSize="18dp" />
+                        android:textSize="14dp" />
                 </LinearLayout>
 
 

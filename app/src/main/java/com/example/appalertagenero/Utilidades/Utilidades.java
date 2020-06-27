@@ -7,7 +7,6 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;

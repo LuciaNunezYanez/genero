@@ -31,17 +31,43 @@ public class Notificaciones {
     }
 
     public static void crearNotificacionNormal(Context context, String CHANNEL, int icon, String titulo, String contenido, int ID_SERVICIO){
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL);
-        builder.setSmallIcon(icon);
-        builder.setContentTitle(titulo);
-        builder.setContentText(contenido);
-        builder.setColor(Color.GRAY);
-        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        builder.setLights(Color.MAGENTA, 1000, 1000);
-        builder.setDefaults(Notification.DEFAULT_SOUND);
+        // API 25 la muestra y API 27 No
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
 
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.notify(ID_SERVICIO, builder.build());
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL);
+            builder.setSmallIcon(icon);
+            builder.setContentTitle(titulo);
+            builder.setContentText(contenido);
+            builder.setColor(Color.GRAY);
+            builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            builder.setLights(Color.MAGENTA, 1000, 1000);
+            builder.setDefaults(Notification.DEFAULT_SOUND);
+
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+            notificationManagerCompat.notify(ID_SERVICIO, builder.build());
+
+        } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+            final NotificationManager mNotific = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            CharSequence nombre = "Alerta de género";
+            int importancia = NotificationManager.IMPORTANCE_HIGH;
+
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL, nombre, importancia);
+            notificationChannel.setDescription(contenido);
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(notificationChannel);
+
+            Notification notification =
+                    new Notification.Builder(context, CHANNEL)
+                            .setColor(Color.WHITE)
+                            .setContentTitle(titulo)
+                            .setContentText(contenido)
+                            .setSmallIcon(icon)
+                            .build();
+
+            mNotific.notify(ID_SERVICIO, notification);
+        }
     }
 
 

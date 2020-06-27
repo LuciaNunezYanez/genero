@@ -31,31 +31,7 @@ public class PanicoWidget extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
-        // Calcular la imagen a utilizar cuando se cambia el tamaño del widget
-        Bundle option = appWidgetManager.getAppWidgetOptions(appWidgetId);
-        float ancho = option.getInt(appWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
-        float alto = option.getInt(appWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
         contextoGlobal = new WeakReference<>(context);
-
-        int imagen;
-        int diseno;
-        int imagenChica = R.drawable.sos_chica;
-        //int layoutMediano = R.layout.panico_widget2;
-        int layoutChico = R.layout.panico_widget;
-        diseno = layoutChico;
-
-        // (Toast.makeText(context, "Alto: " +  alto + " Ancho: " + ancho + "Dif: " + (alto - ancho), Toast.LENGTH_LONG)).show();
-        // Calcular las medidas del Widget para mostrar X diseño
-        /*if ( (alto - ancho) <= 30 && (alto - ancho) >= -75) { // Es cuadrado
-            imagen = imagenChica;
-            diseno = layoutChico;
-        } else {
-            imagen = imagenMediana;
-            diseno = layoutMediano;
-        }*/
-
-        // Muestra la notificación
-
         Intent intentN = new Intent(context, ServicioWidget.class);
         PendingIntent pendingIntent;
 
@@ -64,7 +40,7 @@ public class PanicoWidget extends AppWidgetProvider {
         else
             pendingIntent = PendingIntent.getService(context, 0, intentN, 0);
 
-        RemoteViews views = new RemoteViews(context.getPackageName(), diseno);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.panico_widget);
         views.setOnClickPendingIntent(R.id.btnAlertarWidget, pendingIntent);
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }

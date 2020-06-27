@@ -8,7 +8,9 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -58,18 +60,20 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
     // Components Layout Personales
     LinearLayout linearPersonales;
     EditText txtCorreo, txtNombres, txtPaterno, txtMaterno, dateNacimiento, areaPadecimientos, txtTelefonoM, areaAlergias;
+    TextView lblNuevaContrasena;
     Spinner spSexo, spSangre;
     Button btnSiguiente, btnFechaNac;
     TextView lblPersonales;
 
     // Components Layout Domicilio
     LinearLayout linearDomicilio;
-    EditText txtCalle, txtNumeroExt, txtColonia, txtCodigoP, txtCalle1, txtCalle2, areaReferencia;
+    EditText txtCalle, txtNumeroExt, txtColonia, txtCodigoP, txtCalle1, txtCalle2, areaReferencia, txtContrasena;
     static Spinner spEstado, spMunicipio, spLocalidad;
     Button btnFinalizar, btnRegresar;
+    int id_direccion = 0;
 
-    String stCorreo, stNombres, stPaterno, stMaterno, stNacimiento, stPadecimientos, stTelefonoM, stAlergias, stSexo, stSangre;
-    String stCalle, stNumeroExt, stColonia, stCalle1, stCalle2, stReferencia, stEstado, stMunicipio, stLocalidad;
+    String stCorreo = "", stNombres = "", stPaterno = "", stMaterno = "", stNacimiento = "", stPadecimientos = "", stTelefonoM = "", stAlergias = "", stSexo = "", stSangre = "", stContrasena = "";
+    String stCalle = "", stNumeroExt = "", stColonia = "", stCalle1 = "", stCalle2 = "", stReferencia = "", stEstado = "", stMunicipio = "", stLocalidad = "";
     int codigoP = 0;
 
     String sexo [] = { "Seleccionar", "Femenino", "Masculino", "Desconocido" };
@@ -90,6 +94,13 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
     int id_usuario = 0;
     static String nombre_municipio = "";
     static String nombre_localidad = "";
+    static String accion = "";
+    Boolean actUsuario, actDir;
+
+    // GET Usuario completo
+    String nombre_grupo = "";
+    int id_grupo = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +123,9 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         spSexo.setAdapter( new ArrayAdapter<>(getApplicationContext(), R.layout.custom_spinner_item, sexo));
         spSangre = findViewById(R.id.spinnerTipoSangre);
         spSangre.setAdapter( new ArrayAdapter<>(getApplicationContext(), R.layout.custom_spinner_item, sangre));
+
+        lblNuevaContrasena = findViewById(R.id.lblNuevaContrasena);
+        txtContrasena = findViewById(R.id.txtContrasenaReg);
 
         txtCalle = findViewById(R.id.txtCalle);
         txtNumeroExt = findViewById(R.id.txtNumeroExt);
@@ -136,6 +150,8 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         btnSiguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                try{
                 stCorreo = txtCorreo.getText().toString();
                 stNombres = txtNombres.getText().toString();
                 stPaterno = txtPaterno.getText().toString();
@@ -155,11 +171,16 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                     stSexo = "";
 
                 stSangre = spSangre.getSelectedItem().toString();
+                if(accion.equals("nuevo") || accion.equals("edicion"))
+                    stContrasena = txtContrasena.getText().toString();
 
                 if(stSangre.equals("Seleccionar"))
                     stSangre = "";
+
                 if(!Utilidades.validEmail(stCorreo)) {
                     Toast.makeText(getApplicationContext(), "Correo electrónico inválido", Toast.LENGTH_LONG).show();
+                } else if(stContrasena.length() < 8){
+                    Toast.makeText(getApplicationContext(), "¡Introducir contraseña con al menos 8 caractéres!", Toast.LENGTH_LONG).show();
                 } else if( stNombres.length() < 3 || stPaterno.length() < 3) {
                     Toast.makeText(getApplicationContext(), "Nombre(s) o apellido paterno inválido", Toast.LENGTH_LONG).show();
                 } else if(stSexo.equals("")) {
@@ -169,11 +190,18 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                         int tel = Integer.parseInt(stTelefonoM);
                         Toast.makeText(getApplicationContext(), "Teléfono inválido, solo 10 digitos", Toast.LENGTH_LONG).show();
                     } catch (Exception e){
-                        Toast.makeText(getApplicationContext(), "No son puros números", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "¡El teléfono debe contener solo números!", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    linearPersonales.setVisibility(View.GONE);
-                    linearDomicilio.setVisibility(View.VISIBLE);
+                    if(editar){
+                        actualizarUsuario(id_usuario);
+                    } else {
+                        linearPersonales.setVisibility(View.GONE);
+                        linearDomicilio.setVisibility(View.VISIBLE);
+                    }
+                }}
+                catch(Exception e){
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -189,8 +217,6 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         btnFinalizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(editar) { // Editar datos
-                } else { // Agregar datos
                     stCalle = txtCalle.getText().toString();
                     stNumeroExt = txtNumeroExt.getText().toString();
                     stColonia = txtColonia.getText().toString();
@@ -201,34 +227,38 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                     stReferencia = areaReferencia.getText().toString();
 
                     if(stCalle.length() < 3){
-                        Toast.makeText(getApplicationContext(), "Calle incorrecta", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "¡La calle es incorrecta!", Toast.LENGTH_LONG).show();
                     } else if( stNumeroExt.length() == 0){
-                        Toast.makeText(getApplicationContext(), "Número exterior incorrecto", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "¡El número exterior es incorrecto!", Toast.LENGTH_LONG).show();
                     } else if( stColonia.length() < 3){
-                        Toast.makeText(getApplicationContext(), "Colonia incorrecta", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "¡La colonia es incorrecta!", Toast.LENGTH_LONG).show();
                     } else if( cp.length() > 0 && cp.length() < 5){
-                        Toast.makeText(getApplicationContext(), "El código postal debe contener 5 dígitos", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "¡El código postal debe ser de 5 dígitos!", Toast.LENGTH_LONG).show();
                     } else if( spMunicipio.getSelectedItem() == null || spLocalidad.getSelectedItem() == null){
-                        Toast.makeText(getApplicationContext(), "Municipio y/o localidad inválida", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "¡Municipio y/o localidad inválida!", Toast.LENGTH_LONG).show();
                     } else if( stReferencia.length() < 10 || areaReferencia.getText() == null || areaReferencia.getText().toString().length() < 10){
-                        Toast.makeText(getApplicationContext(), "Referencia muy corta", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "¡La eferencia es muy corta, por favor sea mas especifico!", Toast.LENGTH_LONG).show();
                     } else {
                         if(cp.length() == 5 || cp.length() == 0){
                             try {
                                 if(cp.length() > 0)
                                     codigoP = Integer.parseInt(cp);
-                                Toast.makeText(getApplicationContext(), "Registraré usuario: " + codigoP, Toast.LENGTH_SHORT).show();
                                 stEstado = spEstado.getSelectedItem().toString();
                                 stMunicipio = spMunicipio.getSelectedItem().toString();
                                 stLocalidad = spLocalidad.getSelectedItem().toString();
                                 // Registrar usuario
-                                crearUsuario();
+                                if (!editar)
+                                    crearUsuario();
+                                else {
+                                    actualizarDireccion(id_direccion);
+                                }
+
                             } catch (Exception e){
-                                Toast.makeText(getApplicationContext(), "El código postal debe contener solo números", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "¡El código postal debe tener solo números!", Toast.LENGTH_LONG).show();
                             }
                         }
                     }
-                }
+
             }
         });
 
@@ -273,7 +303,9 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                 id_usuario = getIntent().getExtras().getInt("id");
                 if (id_usuario > 0){
                     editar = true;
-                    btnFinalizar.setText("Actualizar");
+                    btnSiguiente.setText("Actualizar mis datos");
+                    btnFinalizar.setText("Actualizar mi dirección");
+                    btnRegresar.setVisibility(View.GONE);
                     lblPersonales.setText("EDITA TUS DATOS\nPERSONALES");
                     txtCorreo.setText(getIntent().getExtras().getString("correo"));
                     txtCorreo.setEnabled(false);
@@ -285,9 +317,25 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                     editar = false;
                 }
             }
+            if (getIntent().getExtras().containsKey("accion")){
+                accion = getIntent().getExtras().getString("accion");
+                if (accion.equals("recuperacion")){
+                    stContrasena = getIntent().getExtras().getString("contrasena");
+                    txtContrasena.setVisibility(View.GONE);
+                    lblNuevaContrasena.setVisibility(View.GONE);
+
+                }
+                if(accion.equals("login")){
+                    txtContrasena.setText(getIntent().getExtras().getString("contrasena"));
+                    stContrasena = txtContrasena.getText().toString();
+                }
+                if(accion.equals("edicion")){
+                    // Tomar contraseña de las preferencias
+                    // Guardar contraseña en las preferencias
+                }
+            }
         }
         getMunicipios(getApplicationContext(), 10); // 10: Durango
-
     }
 
     public void getUsuario(int id_usuario) { // GET http://localhost:8888/usuariocomercio/completo/104
@@ -301,6 +349,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
             public void onResponse(String response) {
                 try{
                     JSONObject json = new JSONObject(response);
+                    Log.d(TAG, response.toString());
                     Boolean OK = json.getBoolean("ok");
                     if(OK){
                         JSONObject json_u = json.getJSONObject("resp");
@@ -320,6 +369,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                         areaAlergias.setText(json_u.getString("alergias"));
                         spSangre.setSelection(Utilidades.obtenerPosicionItem(spSangre, json_u.getString("tipo_sangre")));
 
+                        id_direccion = json_u.getInt("id_direccion");
                         txtCalle.setText(json_u.getString("calle"));
                         txtNumeroExt.setText(json_u.getString("numero"));
                         txtColonia.setText(json_u.getString("colonia"));
@@ -329,6 +379,9 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                         txtCalle1.setText(json_u.getString("entre_calle_1"));
                         txtCalle2.setText(json_u.getString("entre_calle_2"));
                         areaReferencia.setText(json_u.getString("fachada"));
+
+                        nombre_grupo = json_u.getString("nombre_comercio");
+                        id_grupo = json_u.getInt("id_comercio");
 
                     }
                 } catch (Exception e){
@@ -346,8 +399,157 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         requestQueue.add(requestGetUsuario);
     }
 
-    public void editarUsuario(){
 
+    public void actualizarDireccion(final int idDireccion){
+        final RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        String URL = Constantes.URL + "/direccion/" + idDireccion;
+
+        JSONObject jsonObjectBody = new JSONObject();
+        try {
+            jsonObjectBody.put("calle", stCalle);
+            jsonObjectBody.put("numero", stNumeroExt);
+            jsonObjectBody.put("colonia", stColonia);
+            jsonObjectBody.put("cp", codigoP);
+            jsonObjectBody.put("entre1", stCalle1);
+            jsonObjectBody.put("entre2", stCalle2);
+            jsonObjectBody.put("referencia", stReferencia);
+            jsonObjectBody.put("idLocalidad", id_loc_select);
+            jsonObjectBody.put("lat", 0);
+            jsonObjectBody.put("lg", 0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.toString());
+        }
+
+        final String requestBody = jsonObjectBody.toString();
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.POST, URL, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject object) {
+                        Log.d(TAG, "Respuesta:" + object.toString());
+
+                        try {
+                            Toast.makeText(getApplicationContext(), object.getString("resp"), Toast.LENGTH_LONG).show();
+                            if (object.getBoolean("ok")) {
+                                Boolean res = com.example.appalertagenero.Utilidades.PreferencesComercio.actualizarDireccion(getApplicationContext(),
+                                        stCalle, stNumeroExt, stColonia, codigoP, stCalle1, stCalle2, stReferencia, id_loc_select, nombre_localidad, nombre_municipio, stEstado, idDireccion);
+                                actDir = res ? true : false;
+                                if(!res)
+                                    Toast.makeText(getApplicationContext(), "Ocurrió un error al actualizar los datos locales de la dirección", Toast.LENGTH_LONG).show();
+                                else {
+                                    // Guardar datos de login y grupo/sala
+                                    com.example.appalertagenero.Utilidades.PreferencesComercio.actualizarLogin(getApplicationContext(), id_grupo, id_usuario, "Genero", "");
+                                    com.example.appalertagenero.Utilidades.PreferencesComercio.actualizarSala(getApplicationContext(), id_grupo, 0, nombre_grupo, "", "", "", "");
+                                    activarPermisoAlmacWrite();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        requestQueue.stop();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), "E#11A " + Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
+                        requestQueue.stop();
+                    }
+                }
+        ) {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() {
+                try {
+                    return requestBody == null ? null : requestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Codificación no compatible al intentar obtener los bytes de% s usando %s", requestBody, "utf-8");
+                    return null;
+                }
+            }
+        };
+        requestQueue.add(getRequest);
+    }
+
+    public void actualizarUsuario(final int idusuario){
+        final RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        String URL = Constantes.URL + "/usuariocomercio/" + idusuario;
+
+        JSONObject jsonObjectBody = new JSONObject();
+        try {
+            jsonObjectBody.put("nombre", stNombres);
+            jsonObjectBody.put("paterno", stPaterno);
+            jsonObjectBody.put("materno", stMaterno);
+            jsonObjectBody.put("nacimiento", stNacimiento);
+            jsonObjectBody.put("sexo", stSexo);
+            jsonObjectBody.put("padecimientos", stPadecimientos);
+            jsonObjectBody.put("telefono", stTelefonoM);
+            jsonObjectBody.put("alergias", stAlergias);
+            jsonObjectBody.put("sangre", stSangre);
+            jsonObjectBody.put("pass", stContrasena);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.toString());
+        }
+
+        final String requestBody = jsonObjectBody.toString();
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.POST, URL, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject object) {
+                        Log.d(TAG, "Respuesta:" + object.toString());
+
+                        try {
+                            Toast.makeText(getApplicationContext(), object.getString("resp"), Toast.LENGTH_LONG).show();
+                            if (object.getBoolean("ok")) {
+                                Boolean res = com.example.appalertagenero.Utilidades.PreferencesComercio.actualizarUsuario(getApplicationContext(),
+                                        stNombres, stPaterno, stMaterno, stNacimiento, stSexo,
+                                        stPadecimientos, stTelefonoM, stAlergias, stSangre, stCorreo, idusuario);
+                                actUsuario = res ? true : false;
+                                if(!res)
+                                    Toast.makeText(getApplicationContext(), "¡Ocurrió un error al actualizar los datos locales del usuario! Reintente.", Toast.LENGTH_LONG).show();
+                                else {
+                                    linearPersonales.setVisibility(View.GONE);
+                                    linearDomicilio.setVisibility(View.VISIBLE);
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        requestQueue.stop();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), "E#11 " + Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
+                        requestQueue.stop();
+                    }
+                }
+        ) {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() {
+                try {
+                    return requestBody == null ? null : requestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Codificación no compatible al intentar obtener los bytes de% s usando %s", requestBody, "utf-8");
+                    return null;
+                }
+            }
+        };
+        requestQueue.add(getRequest);
     }
 
     public void crearUsuario(){
@@ -382,6 +584,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
             jsonObjectBody.put("estatus_usuario", 1);
             jsonObjectBody.put("correo_usuario", stCorreo);
             jsonObjectBody.put("id_grupo", 2); // 2 = Alerta de genero
+            jsonObjectBody.put("contrasena", stContrasena);
 
             jsonObjectBody.put("id_comercio", 1); // 1 = Comercio con nombre alerta de género
 
@@ -411,10 +614,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                                     // Obtener cada dato de comercio
                                     object_resultado = object.optJSONObject("resultado");
 
-                                    int id_comercio = object_resultado.getInt("idComercio");
-                                    int id_usuario = object_resultado.getInt("idUsuario");
-                                    int id_direccion = object_resultado.getInt("idDireccion");
-                                    Log.d(TAG, id_comercio + "/" + id_usuario + "/" + id_direccion);
+
 
                                     if(object_resultado.has("resultado")){
                                         Log.d(TAG, "chalalala, " + object_resultado);
@@ -422,6 +622,10 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                                         Log.d(TAG, object_resultado.getInt("resultado") + " = RES");
                                         if(object_resultado.getInt("resultado") == 1){
                                             Log.d(TAG, "Resultado válido");
+                                            int id_comercio = object_resultado.getInt("idComercio");
+                                            int id_usuario = object_resultado.getInt("idUsuario");
+                                            int id_direccion = object_resultado.getInt("idDireccion");
+                                            Log.d(TAG, id_comercio + "/" + id_usuario + "/" + id_direccion);
                                             Toast.makeText(getApplicationContext(), object_resultado.getString("mensage"), Toast.LENGTH_LONG).show();
 
                                             // Guardar la informacion modo local
@@ -477,7 +681,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                                             Toast.makeText(getApplicationContext(), object_resultado.getString("mensage"), Toast.LENGTH_LONG).show();
                                         }
                                     } else {
-                                        Log.d(TAG, "Resultado inválido #2");
+                                        Log.d(TAG, "Resultado cero #2");
                                         Toast.makeText(getApplicationContext(), "Error al procesar su solicitud, reintente más tarde y valide el acceso a internet", Toast.LENGTH_LONG).show();
                                     }
 
@@ -500,6 +704,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Toast.makeText(getApplicationContext(), "E#11A " + Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
+                        requestQueue.stop();
                     }
                 }
         ) {
@@ -553,7 +758,9 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                         if(editar){
                             Log.d(TAG, nombre_municipio);
                             spMunicipio.setSelection(Utilidades.obtenerPosicionItem(spMunicipio, nombre_municipio));
-                        }
+                        } else
+                            spMunicipio.setSelection(Utilidades.obtenerPosicionItem(spMunicipio, "Durango"));
+
                     } catch (JSONException e) {
                         Toast.makeText(context, "Error al obtener los municipios" + e.toString(), Toast.LENGTH_SHORT).show();
                     }
@@ -598,7 +805,8 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                     spLocalidad.setAdapter( new ArrayAdapter<>(context, R.layout.custom_spinner_item, misLocalidades));
                     if(editar){
                         spLocalidad.setSelection(Utilidades.obtenerPosicionItem(spLocalidad, nombre_localidad));
-                    }
+                    } else
+                        spLocalidad.setSelection(Utilidades.obtenerPosicionItem(spLocalidad, "Victoria de Durango"));
                 }
                 catch(JSONException e){
                     Toast.makeText(context, "Error en municipios"+e.toString(), Toast.LENGTH_SHORT).show();
@@ -637,6 +845,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
     private void iniciarMain(){
         Intent intent = new Intent(RegistroActivity.this, MainActivity.class);
         startActivity(intent);
+        RegistroActivity.this.finish();
     }
 
     private void activarPermisoAlmacWrite(){
@@ -657,7 +866,12 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
 
     private void permisoParaAparecerEncima(){
         iniciarMain();
-        HiddenCameraUtils.openDrawOverPermissionSetting(getApplicationContext());
+        // Comprobar permiso para acceder encima..
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(!Settings.canDrawOverlays(this))
+                HiddenCameraUtils.openDrawOverPermissionSetting(getApplicationContext());
+        }
+
     }
 
 
