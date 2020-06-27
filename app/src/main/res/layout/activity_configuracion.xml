@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:backgroundTint="@color/fondoGris"
     android:orientation="vertical"
     tools:context=".ConfiguracionActivity">
 
@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         android:background="@color/colorRosaClaro"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
 
         <!--<ImageView
@@ -47,32 +48,36 @@
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_configuration_buble" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#EEC5C5C5"
-        android:orientation="vertical"/>
+        android:orientation="vertical"
+        android:visibility="gone" />
 
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:backgroundTint="@color/fondoGris">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:backgroundTint="@color/fondoGris"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 android:fontFamily="sans-serif-black"
                 android:gravity="center_horizontal"
                 android:paddingLeft="20dp"
-                android:paddingRight="15dp"
-                android:text="Alerta al presionar el botón de encendido."
+                android:paddingRight="20dp"
+                android:text="Alerta al presionar el botón de encendido"
                 android:textColor="@color/colorAzulFuerte"
                 android:textSize="18sp" />
 
@@ -130,7 +135,7 @@
                 android:fontFamily="sans-serif-condensed-light"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:text="Número de veces que se desean tomar las fotografías (Máximo 3)."
+                android:text="Configure el número de veces que se desean tomar las fotografías (Máximo 3 ciclos)."
                 android:textColor="#404141"
                 android:textSize="16sp" />
 
@@ -157,7 +162,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginLeft="5dp"
-                    android:backgroundTint="@color/colorVerdeGob"
+                    android:backgroundTint="@color/colorRosaGuinda"
                     app:srcCompat="@drawable/ic_save" />
 
             </LinearLayout>

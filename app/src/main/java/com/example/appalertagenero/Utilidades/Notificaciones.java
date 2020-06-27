@@ -14,24 +14,10 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.appalertagenero.Constantes;
-import com.example.appalertagenero.R;
-
-import static com.example.appalertagenero.Constantes.CHANNEL_ID;
-import static com.example.appalertagenero.Constantes.ID_SERVICIO_PANICO;
 
 public class Notificaciones {
 
-    public void crearNotificacionChannel(Context context){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            CharSequence name = "Notificación";
-            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(notificationChannel);
-        }
-    }
-
     public static void crearNotificacionNormal(Context context, String CHANNEL, int icon, String titulo, String contenido, int ID_SERVICIO){
-        // API 25 la muestra y API 27 No
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL);
@@ -49,11 +35,9 @@ public class Notificaciones {
         } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 
             final NotificationManager mNotific = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-            CharSequence nombre = "Alerta de género";
             int importancia = NotificationManager.IMPORTANCE_HIGH;
 
-            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL, nombre, importancia);
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL, Constantes.NOMBRE_APP, importancia);
             notificationChannel.setDescription(contenido);
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(notificationChannel);
@@ -70,33 +54,6 @@ public class Notificaciones {
         }
     }
 
-
-
-    public static void crearNotificacionNormalV2(Context context, String CHANNEL, int icon, String titulo, String contenido, int ID_SERVICIO, Class<?> clase){
-        try {
-            Intent notificationIntent = new Intent(context, clase);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-
-            Notification.Builder builder = new Notification.Builder(context);
-            builder.setSmallIcon(icon);
-            builder.setContentTitle(titulo);
-            builder.setContentText(contenido);
-            builder.setColor(Color.GRAY);
-            builder.setPriority(Notification.PRIORITY_DEFAULT);
-            builder.setLights(Color.MAGENTA, 1000, 1000);
-            builder.setVibrate(new long[] {1000, 1000, 1000, 1000, 1000});
-            builder.setDefaults(Notification.DEFAULT_SOUND);
-            builder.setContentIntent(pendingIntent);
-            builder.build();
-            //NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-            //notificationManagerCompat.notify(ID_SERVICIO, builder.build());
-
-
-        } catch (Exception e){
-            Log.d(clase.getName(), "XXXXXXXXX Error en pending intent. " + e.getMessage());
-        }
-
-    }
 
     /*public void crearNotificacionPersistente(Context context, Class clase, String CHANNEL, int icon, String titulo, String contenido, String descripc){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

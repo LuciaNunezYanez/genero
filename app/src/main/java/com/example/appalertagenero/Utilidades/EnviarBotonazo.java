@@ -56,25 +56,8 @@ public class EnviarBotonazo {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
-                String errorResp = "Error #2: " + R.string.error_desconocido;
-
-                if (error instanceof TimeoutError) {
-                    errorResp = "Error #2: " + R.string.error_tiempo_agotado;
-                } else if (error instanceof NoConnectionError) {
-                    errorResp = "Error #2: " + R.string.error_sin_conexion;
-                } else if (error instanceof AuthFailureError) {
-                    errorResp = "Error #2: " + R.string.error_fallo_autenticar;
-                } else if (error instanceof ServerError) {
-                    errorResp = "Error #2: " + R.string.error_servidor;
-                } else if (error instanceof NetworkError) {
-                    errorResp = "Error #2: " + R.string.error_red;
-                } else if (error instanceof ParseError) {
-                    errorResp = "Error #2: " + R.string.error_parseo;
-                }
-
+                String errorResp = "Error #2: " + Utilidades.tipoErrorVolley(error);
                 Toast.makeText(context, errorResp, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, errorResp);
                 requestQueue.stop();
             }
         }) {

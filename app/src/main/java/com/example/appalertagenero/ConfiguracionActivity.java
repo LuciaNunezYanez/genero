@@ -124,15 +124,15 @@ public class ConfiguracionActivity extends AppCompatActivity {
     }
 
     public void iniciarServicioPersistente(){
-        try{
+        try {
             Intent notificationIntent = new Intent(getApplication(), ServicioNotificacion.class);
             notificationIntent.putExtra("padre", "App");
             getApplication().startService(notificationIntent);
 
             isActive = Utilidades.isMyServiceRunning(getApplication(), ServicioNotificacion.class);
             actualizarPreferenciasNotificacion(isActive);
-        }catch (Exception io){
-            Toast.makeText(getApplicationContext(), "Error al actualizar preferencias", Toast.LENGTH_LONG).show();
+        } catch (Exception io){
+            Toast.makeText(getApplicationContext(), "¡Error al actualizar los datos locales!", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -205,7 +205,6 @@ public class ConfiguracionActivity extends AppCompatActivity {
         switch (requestCode) {
             case Constantes.MY_PERMISSIONS_REQUEST_ALMAC_WRITE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "PERMISO DE ESCRITURA ACEPTADO");
                     permisoAlmacWrite();
                 } else {
                     Toast.makeText(getApplicationContext(), "¡Permiso de escritura denegado!", Toast.LENGTH_LONG).show();
@@ -214,7 +213,6 @@ public class ConfiguracionActivity extends AppCompatActivity {
             }
             case Constantes.MY_PERMISSIONS_REQUEST_CAMERA: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "PERMISO DE CAMARA ACEPTADO");
                     permisoCam();
                 } else {
                     Toast.makeText(getApplicationContext(), "¡Permiso de cámara denegado!", Toast.LENGTH_LONG).show();
@@ -223,7 +221,6 @@ public class ConfiguracionActivity extends AppCompatActivity {
             }
             case Constantes.MY_PERMISSIONS_REQUEST_MICROF: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "PERMISO DE MICROFONO ACEPTADO");
                     permisoMicrof();
                 } else {
                     Toast.makeText(getApplicationContext(), "¡Permiso de micrófono denegado!", Toast.LENGTH_LONG).show();
@@ -232,7 +229,6 @@ public class ConfiguracionActivity extends AppCompatActivity {
             }
             case Constantes.MY_PERMISSIONS_REQUEST_UBICAC: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "PERMISO DE UBICACION ACEPTADO");
                     permisoUbic();
                 } else {
                     Toast.makeText(getApplicationContext(), "¡Permiso de ubicación denegado!", Toast.LENGTH_LONG).show();

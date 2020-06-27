@@ -23,6 +23,7 @@ import android.util.Log;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.appalertagenero.Constantes;
 import com.example.appalertagenero.R;
 import com.example.appalertagenero.Utilidades.EnviarCoordenadas;
 import com.example.appalertagenero.Utilidades.EnviarImagenes;
@@ -43,7 +44,7 @@ public class ServicioWidget extends Service {
     // VARIABLES PARA USO DE MULTIMEDIA
     ImageTraseraResultReceiver resultTReceiver;
     ImageFrontalResultReceiver resultFReceiver;
-    int ciclo = 1;
+    //int ciclo = 1;
 
     public static final int SUCCESS = 1;
     public static final int ERROR = 0;
@@ -76,10 +77,7 @@ public class ServicioWidget extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         iniciarProceso();
-       // if (Build.VERSION.SDK_INT >=  Build.VERSION_CODES.O)
-            crearNotificacionPersistente(getApplicationContext(), ServicioWidget.class, CHANNEL_ID, "Botón de pánico activado", "Botón activado desde el widget. Enviando multimedia..", R.drawable.ic_notification_siren_2, "Descripción", ID_SERVICIO_WIDGET_CREAR_REPORTE);
-        //else
-         //   Notificaciones.crearNotificacionNormal(getApplicationContext(), CHANNEL_ID, R.drawable.ic_color_error, "Botón de pánico activado", "Botón activado desde el widget. Enviando multimedia..", ID_SERVICIO_WIDGET);
+        crearNotificacionPersistente(getApplicationContext(), ServicioWidget.class, CHANNEL_ID, "¡Botón de pánico activado!", "Botón activado desde el widget. Enviando multimedia..", R.drawable.ic_notification_siren_2, "Descripción", ID_SERVICIO_WIDGET_CREAR_REPORTE);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -90,8 +88,6 @@ public class ServicioWidget extends Service {
 
     public void iniciarProceso(){
         Boolean puedeEnviar = PreferencesReporte.puedeEnviarReporte(getApplicationContext(), System.currentTimeMillis());
-        Log.d("REPORTE", "Puede enviar?? " + puedeEnviar);
-
         if(puedeEnviar){
             PreferencesReporte.guardarReporteInicializado(getApplicationContext());
             LocalBroadcastManager.getInstance(getApplication()).registerReceiver(broadcastReceiverGenerarAlerta, new IntentFilter("generarAlertaService"));
@@ -103,13 +99,11 @@ public class ServicioWidget extends Service {
         }
     }
 
-
-
     public void crearNotificacionPersistente(Context context, Class clase, String canal, String titulo, String mensaje, int icono, String descripcion, int idServicio){
 
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, clase), 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Crear notificación de servicio activo
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, clase), 0);
             Notification notification =
                     new Notification.Builder(context, canal)
                             .setColor(Color.WHITE)
@@ -120,21 +114,14 @@ public class ServicioWidget extends Service {
                             .setContentIntent(pendingIntent)
                             .build();
 
-            // Crear al canal de notificación, pero solo en API 26+
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, "Botón de pánico para comercios", NotificationManager.IMPORTANCE_HIGH);
-                notificationChannel.setDescription(descripcion);
-                NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-                notificationManager.createNotificationChannel(notificationChannel);
-            }
-
+            // Crear al canal de notificación
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, Constantes.NOMBRE_APP, NotificationManager.IMPORTANCE_HIGH);
+            notificationChannel.setDescription(descripcion);
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(notificationChannel);
             startForeground(idServicio, notification);
-            Log.d(TAG,"Se inicio servicio para API 26+ - Desde servicio prueba!");
 
-        } else{
-            Log.d(TAG,"XXXXXXXXXXX SERVICIO PARA NO MENOR A OREO!");
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, clase), 0);
-
+        } else {
             // Crear notificación de servicio activo
             Notification notification =
                     new Notification.Builder(context)
@@ -170,9 +157,9 @@ public class ServicioWidget extends Service {
         Intent intent = new Intent(getApplicationContext(), GenerarAlertaService.class);
         intent.putExtra("comercio", idComercio);
         intent.putExtra("usuario", idUsuario);
-        intent.putExtra("sala", "Comercios");
+        intent.putExtra("sala", "Genero");
         intent.putExtra("fecha", Utilidades.obtenerFecha());
-        intent.setPackage("com.id.socketio");
+        intent.setPackage("com.example.appalertagenero");
         getApplicationContext().startService(intent);
     }
 
@@ -275,8 +262,6 @@ public class ServicioWidget extends Service {
 
             procesoImageTrasera = true;
             FECHA_TRASERA = resultData.getString("fecha");
-            Log.d(TAG, "La fecha de trasera es: " + FECHA_TRASERA);
-
             // GUARDAR LA IMAGEN DE RETORNO
             String imagenTrasera = resultData.getString("imagen");
             if(!imagenTrasera.equals("Ninguna")){
@@ -316,7 +301,6 @@ public class ServicioWidget extends Service {
 
             procesoImagenFrontal = true;
             FECHA_FRONTAL = resultData.getString("fecha");
-            Log.d(TAG, "La fecha de frontal es: " + FECHA_FRONTAL);
 
             // GUARDAR LA IMAGEN DE RETORNO
             String imagenFrontal = resultData.getString("imagen");
@@ -326,7 +310,6 @@ public class ServicioWidget extends Service {
 
             switch (resultCode) {
                 case ERROR:
-
                     Log.d(TAG, "Ocurrió un error al devolver cámara frontal");
                     // SE SIGUE CON LA TRASERA
                     break;
@@ -418,8 +401,8 @@ public class ServicioWidget extends Service {
                     comenzarGPS();
 
                     // Obtener el numero de ciclos para comenzar a tomar las fotografias
-                    PreferencesCiclo preferencesCiclo = new PreferencesCiclo();
-                    ciclo = preferencesCiclo.obtenerCicloFotografias(getApplicationContext());
+                    //PreferencesCiclo preferencesCiclo = new PreferencesCiclo();
+                    //ciclo = preferencesCiclo.obtenerCicloFotografias(getApplicationContext());
                     if (puedoFinalizar(context))
                         stopSelf();
                     /*if(ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
@@ -432,7 +415,7 @@ public class ServicioWidget extends Service {
                     notificaciones.crearNotificacionNormal(getApplicationContext(), CHANNEL_ID, R.drawable.ic_color_error, "¡No se pudo generar la alerta de pánico!", parametros.getString("message", "Sin mensaje"), ID_SERVICIO_WIDGET_CREAR_REPORTE);
                 }
             } catch (Exception e){
-                Log.e(TAG, "Catch broadscast receiver generar alerta: " + e.getMessage());
+                Log.e(TAG, "Catch broadcast receiver generar alerta: " + e.getMessage());
             }
         }
     };
@@ -469,17 +452,8 @@ public class ServicioWidget extends Service {
     private BroadcastReceiver broadcastReceiverAudio = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Bundle parametros = intent.getExtras();
-            boolean termino = parametros.getBoolean("termino");
-
-            Log.d(TAG, "Respondió Servicio " + parametros.toString());
-            if(termino){
-                terminarGrabacionAudio();
-            } else {
-                Log.d(TAG, "Termino mal Audio");
-                terminarGrabacionAudio();
-                //eliminarEscuchadorAudio();
-            }
+            Boolean termino = intent.getExtras().getBoolean("termino");
+            terminarGrabacionAudio();
             if (puedoFinalizar(context))
                 stopSelf();
         }
@@ -493,8 +467,6 @@ public class ServicioWidget extends Service {
             return false;
         }
     }
-
-
 
     @Override
     public void onDestroy() {

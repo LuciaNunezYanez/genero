@@ -100,7 +100,7 @@ public class DirectorioActivity extends AppCompatActivity {
                     }
                 }
                 catch(JSONException e){
-                    Toast.makeText(context, "Error"+e.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Error: " + e.toString(), Toast.LENGTH_SHORT).show();
                 }
                 requestQueue.stop();
             }
@@ -115,10 +115,10 @@ public class DirectorioActivity extends AppCompatActivity {
         requestQueue.add(requestGetDirectorio);
     }
 
-    public static HashMap<String, String> createEmployee(String name, String number){
+    /*public static HashMap<String, String> createEmployee(String name, String number){
         HashMap<String, String> employeeNameNo = new HashMap<String, String>();
         employeeNameNo.put(name, number);
         return employeeNameNo;
-    }
+    }*/
 
 }

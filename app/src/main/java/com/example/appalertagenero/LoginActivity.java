@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(intent);
                             }
                         } catch (Exception e){
-                            Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                         requestQueue.stop();
                     }
@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), "E#11A " + Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),  Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
                     }
                 }
         ) {

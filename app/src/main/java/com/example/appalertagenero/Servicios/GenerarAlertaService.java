@@ -31,8 +31,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 
-import static com.example.appalertagenero.Utilidades.PreferencesComercio.obtenerToken;
-
 public class GenerarAlertaService extends Service {
 
     static String TAG = "Notificacion";
@@ -67,14 +65,9 @@ public class GenerarAlertaService extends Service {
         contextoGlobal = new WeakReference<>(getApplicationContext());
         intentGlobal = intent;
 
-        Log.d("PRUEBA", "Entro a generarAlertaService()");
-
         if(intent == null){
-            Log.d(TAG, "Intent NULL");
             darResultados(getApplicationContext(), 0, false, false, false, "Intent NULL");
             stopSelf();
-        } else {
-            Log.d(TAG, "Intent no NULL");
         }
 
         // Recuperar valores de entrada
@@ -84,17 +77,13 @@ public class GenerarAlertaService extends Service {
             // sala = intent.getStringExtra("sala");
             fecha = intent.getStringExtra("fecha");
         }catch ( Exception e ){
-            Log.d(TAG, "Debe regresar que no se encontrarón los datos parametros de entrada");
             darResultados(getApplicationContext(), 0, false, false, false, "Los datos del grupo son incorrectos");
             stopSelf();
         }
 
         if (idComercio != 0 && idUsuario != 0){
-            Log.d(TAG, "Recibí:" + " Comercio "+ idComercio + " Usuario " + idUsuario + " Fecha: " + fecha);
             generarReporte();
-
         } else {
-            Log.d(TAG, "No venian los datos del comercio: " + idComercio + ", user: " + idUsuario);
             darResultados(getApplicationContext(),0, false, false, false, "Los datos del grupo son incorrectos");
             stopSelf();
         }
@@ -105,17 +94,12 @@ public class GenerarAlertaService extends Service {
         enviarAlerta(getApplicationContext(), idComercio, idUsuario);
     }
 
-    /*public static void stop(){
-        contextoGlobal.get().stopService(intentGlobal);
-    }*/
-
     // ************************************************
     // ALERTA ALERTA ALERTA ALERTA ALERTA ALERTA ALERTA
     // ************************************************
     public static void enviarAlerta(final Context context, int idComercio, int idUsuario){
         JsonObjectRequest requestAlerta;
-        String URL = Constantes.URL + "/alerta/"+ obtenerToken(context);
-        Log.d(TAG, "La URL quedó así: " + URL);
+        String URL = Constantes.URL + "/alerta/";// Se le quitó token 26/06/2020
 
         final RequestQueue requestQueue = Volley.newRequestQueue(context);
         JSONObject jsonObject = new JSONObject();
@@ -134,7 +118,6 @@ public class GenerarAlertaService extends Service {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            Log.d(TAG, "Response vale: " + response);
                             Boolean ok = response.getBoolean("ok");
 
                             if(ok){
@@ -162,21 +145,7 @@ public class GenerarAlertaService extends Service {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String errorResp = "Error #6: Desconocido";
-
-                if (error instanceof TimeoutError) {
-                    errorResp = "Error #6: Verifique su conexión";
-                } else if (error instanceof NoConnectionError) {
-                    errorResp = "Error #6: Sin conexión con el servidor";
-                } else if (error instanceof AuthFailureError) {
-                    errorResp = "Error #6: Fallo al autenticar";
-                } else if (error instanceof ServerError) {
-                    errorResp = "Error #6: Servidor";
-                } else if (error instanceof NetworkError) {
-                    errorResp = "Error #6: Red";
-                } else if (error instanceof ParseError) {
-                    errorResp = "Error #6: Parseo";
-                }
+                String errorResp = "Error #6: " + Utilidades.tipoErrorVolley(error);
                 Log.e(TAG, errorResp);
                 darResultados(context, 0, false, false, false, errorResp);
             }
@@ -218,7 +187,6 @@ public class GenerarAlertaService extends Service {
         intent.putExtra("message", message);
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-
         //stopSelf();
     }
 }

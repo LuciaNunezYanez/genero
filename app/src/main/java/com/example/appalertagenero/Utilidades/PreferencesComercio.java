@@ -200,19 +200,18 @@ public class PreferencesComercio {
             editorUsuario.putString("correo",correo);
             editorUsuario.commit();
 
-
             return true;
         } catch (Exception e){
             return false;
         }
     }
 
-    public static String obtenerToken(Context context){
+    /*public static String obtenerToken(Context context){
         SharedPreferences preferencesComercio = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
         if (preferencesComercio.contains("token")){
             return preferencesComercio.getString("token","N");
         } else {
             return "N";
         }
-    }
+    }*/
 }

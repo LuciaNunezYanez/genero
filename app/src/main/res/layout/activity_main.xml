@@ -53,7 +53,7 @@
 
         <ImageView
             android:id="@+id/imageView2"
-            android:layout_width="25dp"
+            android:layout_width="20dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
@@ -100,16 +100,16 @@
                 android:layout_marginRight="10dp"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:gravity="center"
-                android:text="Presiona el botón para activar la ayuda."
+                android:text="Presiona el botón para solicitar ayuda."
                 android:textSize="18sp" />
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/sendButton"
-            android:layout_width="232dp"
-            android:layout_height="226dp"
+            android:layout_width="260dp"
+            android:layout_height="260dp"
             android:layout_alignParentEnd="true"
-            android:background="@drawable/ic_button_red"
+            android:background="@drawable/btn_red"
             android:onClick="activarBoton"
             android:scaleType="fitCenter"
             android:textAlignment="center" />
@@ -129,19 +129,20 @@
             android:layout_width="180dp"
             android:layout_height="40dp"
             android:layout_marginTop="20dp"
-            android:background="#B8B5AE"
+            android:backgroundTint="@color/colorGrisClaro"
             android:fontFamily="sans-serif-condensed-light"
+            android:gravity="center"
             android:onClick="cancelarAlerta"
             android:text="Cancelar alerta"
             android:textColor="#FFFF"
-            android:textSize="16sp" />
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/txtApunta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
 
     </LinearLayout>
@@ -152,7 +153,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:fab_addButtonColorNormal="@color/colorRosaClaro"
+        app:fab_addButtonColorNormal="@color/colorRosaGuinda"
         app:fab_addButtonColorPressed="@color/colorAzulFuerte"
         app:fab_labelStyle="@style/etiqueta">
 
@@ -164,7 +165,7 @@
             app:fab_colorPressed="@color/colorRosaClaro"
             app:fab_icon="@drawable/ic_user_white"
             app:fab_size="normal"
-            app:fab_title="Perfíl" />
+            app:fab_title="Mi información" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabConfig"
@@ -190,7 +191,7 @@
             android:id="@+id/fabViolentometro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/colorRosaGuinda"
+            app:fab_colorNormal="@color/colorRosaClaro"
             app:fab_colorPressed="@color/colorNaranjaPastel"
             app:fab_icon="@drawable/ic_rule"
             app:fab_size="mini"

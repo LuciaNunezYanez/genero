@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -166,11 +167,7 @@ public class AudioService extends Service  {
 
         String pathParaEnviar = audios[posicionEnviar];
         String fechaParaEnviar = fechas[posicionEnviar];
-
-        Log.d(TAG, "(Hilo 2) Path: " + pathParaEnviar);
-
         String audioBase64 = Utilidades.convertirAudioString(pathParaEnviar);
-        // Log.d(TAG, "La longitud de caracteres base 64 es de: " + audioBase64.length()); //33,000 aprox
         String URL = Constantes.URL + "/upload/audio/" + reporteCreado;
 
         final RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -195,23 +192,7 @@ public class AudioService extends Service  {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
-                String errorResp = "Error #7: Desconocido";
-
-                if (error instanceof TimeoutError) {
-                    errorResp = "Error #7: Timeout";
-                } else if (error instanceof NoConnectionError) {
-                    errorResp = "Error #7: Sin Conexión";
-                } else if (error instanceof AuthFailureError) {
-                    errorResp = "Error #7: Fallo al autenticar";
-                } else if (error instanceof ServerError) {
-                    errorResp = "Error #7: Servidor";
-                } else if (error instanceof NetworkError) {
-                    errorResp = "Error #7: Red";
-                } else if (error instanceof ParseError) {
-                    errorResp = "Error #7: Parseo";
-                }
-                Log.e(TAG, errorResp);
+                String tipo_error = "ERROR #7 " + Utilidades.tipoErrorVolley(error);
                 // Detener proceso una vez que se no se envió el audio
                 requestQueue.stop();
             }
@@ -245,15 +226,12 @@ public class AudioService extends Service  {
         @Override
         protected String doInBackground(Integer... posicion) {
             posicionParaGuardar = posicion[0];
-            Log.d(TAG, "(Hilo 1) Posicion para guardar el presente audio: " + posicionParaGuardar);
             iniciarGrabacion();
             return "fin";
         }
 
         private void iniciarGrabacion(){
             AudioSavePathInDevice = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + nombreAudio + "_" + posicionParaGuardar + "." + EXTENSION_AUDIO;
-            Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 1: " + posicionParaGuardar);
-
             mediaRecorder = new MediaRecorder();
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             // mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -264,14 +242,10 @@ public class AudioService extends Service  {
             mediaRecorder.setMaxDuration(DURACION_AUDIO);
             mediaRecorder.setOutputFile(AudioSavePathInDevice);
             mediaRecorder.setOnInfoListener(this);
-            Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 3: " + posicionParaGuardar);
 
             try {
-                //Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 4: " + posicionParaGuardar);
                 mediaRecorder.prepare();
-                //Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 5: " + posicionParaGuardar);
                 mediaRecorder.start();
-                //Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXX 6: " + posicionParaGuardar);
 
                 fechas[posicionParaGuardar] = Utilidades.obtenerFecha();
 
@@ -279,13 +253,10 @@ public class AudioService extends Service  {
             } catch (IllegalStateException e) {
                 Log.d(TAG, "(Hilo 1) Catch 1");
                 e.printStackTrace();
-                //darResultados(false);
             } catch (IOException e) {
                 Log.d(TAG, "(Hilo 1) Catch 2" + e.getMessage());
-                //darResultados(false);
                 e.printStackTrace();
             }
-            Log.d(TAG, "(Hilo 1) (iniciarGrabacion()) Empezó grabación. Contador: " + posicionParaGuardar);
         }
 
         @Override
@@ -343,11 +314,10 @@ public class AudioService extends Service  {
 
             // Crear al canal de notificación, pero solo en API 26+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                CharSequence nombre = "Alerta de género"; //2
                 String descripcion = "El uso de este servicio le permite detectar cuando se presiona tres veces el botón de bloqueo y genera la alerta de pánico"; //
                 int importancia = NotificationManager.IMPORTANCE_HIGH;
 
-                NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, nombre, importancia);
+                NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, Constantes.NOMBRE_APP, importancia);
                 notificationChannel.setDescription(descripcion);
                 NotificationManager notificationManager = getSystemService(NotificationManager.class);
                 notificationManager.createNotificationChannel(notificationChannel);

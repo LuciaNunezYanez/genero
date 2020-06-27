@@ -1,6 +1,7 @@
 package com.example.appalertagenero.Utilidades;
 
 import android.app.ActivityManager;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Base64;
@@ -15,11 +16,14 @@ import com.android.volley.ParseError;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.example.appalertagenero.R;
+import com.example.appalertagenero.RegistroActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -97,7 +101,7 @@ public class Utilidades {
         } else if (error instanceof AuthFailureError) {
             return "Falló al autenticar";
         } else if (error instanceof ServerError) {
-            return "Error de servidor";
+            return "El servidor no responde";
         } else if (error instanceof NetworkError) {
             return "Error de Red";
         } else if (error instanceof ParseError) {
@@ -117,5 +121,6 @@ public class Utilidades {
         Pattern pattern = Patterns.PHONE;
         return pattern.matcher(telefono).matches();
     }
+
 
 }

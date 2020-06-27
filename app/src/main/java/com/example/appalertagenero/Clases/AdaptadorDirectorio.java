@@ -18,7 +18,6 @@ public class AdaptadorDirectorio extends BaseAdapter {
     public AdaptadorDirectorio(Context contexto, String[][] datos){
         this.contexto = contexto;
         this.datos = datos;
-
         inflater = (LayoutInflater) contexto.getSystemService(contexto.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -35,9 +34,6 @@ public class AdaptadorDirectorio extends BaseAdapter {
         lblDatos.setText(datos[i][1]);
         lblTelefonos.setText(datos[i][2]);
         // image.setImageResource(R.drawable.ic_location);
-
-
-
         return vista;
     }
 

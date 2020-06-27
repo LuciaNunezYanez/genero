@@ -306,7 +306,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                     btnSiguiente.setText("Actualizar mis datos");
                     btnFinalizar.setText("Actualizar mi dirección");
                     btnRegresar.setVisibility(View.GONE);
-                    lblPersonales.setText("EDITA TUS DATOS\nPERSONALES");
+                    lblPersonales.setText("ACTUALIZA TUS DATOS\nPERSONALES");
                     txtCorreo.setText(getIntent().getExtras().getString("correo"));
                     txtCorreo.setEnabled(false);
                     txtCorreo.setFocusable(false);
@@ -435,7 +435,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                                         stCalle, stNumeroExt, stColonia, codigoP, stCalle1, stCalle2, stReferencia, id_loc_select, nombre_localidad, nombre_municipio, stEstado, idDireccion);
                                 actDir = res ? true : false;
                                 if(!res)
-                                    Toast.makeText(getApplicationContext(), "Ocurrió un error al actualizar los datos locales de la dirección", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), "¡Ocurrió un error al actualizar los datos locales de la dirección!", Toast.LENGTH_LONG).show();
                                 else {
                                     // Guardar datos de login y grupo/sala
                                     com.example.appalertagenero.Utilidades.PreferencesComercio.actualizarLogin(getApplicationContext(), id_grupo, id_usuario, "Genero", "");
@@ -518,11 +518,9 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                                     linearDomicilio.setVisibility(View.VISIBLE);
                                 }
                             }
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                         requestQueue.stop();
                     }
                 },
@@ -554,8 +552,6 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
 
     public void crearUsuario(){
         final RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-
-        //1578347038755
         String URL = Constantes.URL + "/registroalertagenero";
 
         JSONObject jsonObjectBody = new JSONObject();
@@ -598,28 +594,16 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.POST, URL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        // display response
-                        Log.d(TAG, "Respuesta:" + response.toString());
-
-                        String json = response.toString();
-                        JSONObject object = null;
-                        JSONObject object_resultado = null;
+                    public void onResponse(JSONObject object) {
                         try {
-                            object = new JSONObject(json);
                             Boolean ok = object.getBoolean("ok");
                             if (ok) {
                                 if (object.has("resultado")) {
                                     Log.d(TAG, "Resultado = TRUE");
                                     // Obtener cada dato de comercio
-                                    object_resultado = object.optJSONObject("resultado");
-
-
+                                    JSONObject object_resultado = object.optJSONObject("resultado");
 
                                     if(object_resultado.has("resultado")){
-                                        Log.d(TAG, "chalalala, " + object_resultado);
-
-                                        Log.d(TAG, object_resultado.getInt("resultado") + " = RES");
                                         if(object_resultado.getInt("resultado") == 1){
                                             Log.d(TAG, "Resultado válido");
                                             int id_comercio = object_resultado.getInt("idComercio");
@@ -629,12 +613,12 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                                             Toast.makeText(getApplicationContext(), object_resultado.getString("mensage"), Toast.LENGTH_LONG).show();
 
                                             // Guardar la informacion modo local
-                                            if (id_comercio == 1) {
+                                            if (id_comercio >= 1) {
                                                 Boolean resp = com.example.appalertagenero.Utilidades.PreferencesComercio.guardarDatosComercio(getApplicationContext(),
                                                         id_comercio,
                                                         id_direccion,
                                                         0,
-                                                        "Alerta de género",
+                                                        Constantes.NOMBRE_APP,
                                                         "",
                                                         "",
                                                         "",
@@ -663,13 +647,11 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                                                         stCorreo,
                                                         "");
 
-                                                Log.d(TAG, "La respuesta al guardar es: " + resp);
                                                 if (resp) {
                                                     tieneAcceso = true;
                                                     activarPermisoAlmacWrite();
                                                 } else {
-                                                    Log.d(TAG, "No se pudieron guardar los datos");
-                                                    Toast.makeText(getApplicationContext(), "Error al guardar la información", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getApplicationContext(), "¡Error al guardar la información local!", Toast.LENGTH_SHORT).show();
                                                 }
                                             } else {
                                                 Log.d(TAG, "No se pudieron obtener los datos");
@@ -691,7 +673,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                                 }
                             } else {
                                 Log.d(TAG, "Error al traer los datos" + object.optJSONObject("error").toString());
-                                (Toast.makeText(getApplicationContext(), "Error al procesar registro" + object.optJSONObject("error").toString(), Toast.LENGTH_SHORT)).show();
+                                Toast.makeText(getApplicationContext(), "¡Error al procesar registro! Reintente más tarde." + object.optJSONObject("error").toString(), Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -747,8 +729,8 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                         JSONArray ids_municipios = jsonResponse.optJSONArray("id_municipios");
                         JSONArray nombre_municipios = jsonResponse.optJSONArray("nombre_municipio");
 
-                        misMunicipios = new ArrayList<String>();
-                        misIDsMunicipios = new ArrayList<String>();
+                        misMunicipios = new ArrayList<>();
+                        misIDsMunicipios = new ArrayList<>();
 
                         for (int i = 0; i < nombre_municipios.length(); i++) {
                             misMunicipios.add(nombre_municipios.getString(i));
@@ -762,7 +744,7 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                             spMunicipio.setSelection(Utilidades.obtenerPosicionItem(spMunicipio, "Durango"));
 
                     } catch (JSONException e) {
-                        Toast.makeText(context, "Error al obtener los municipios" + e.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "¡Error al obtener los municipios!" + e.toString(), Toast.LENGTH_SHORT).show();
                     }
                     requestQueue.stop();
                 }

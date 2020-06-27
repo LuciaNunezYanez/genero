@@ -28,11 +28,11 @@ public class Constantes {
 
     //public static String TAG = "Debug";
     // Constantes para reporte
-    public static final int DIFERENCIA_ENTRE_REPORTES = 60000; // 60000 = 1 minuto
-    public static final int LAPSO_PARA_CANCELAR_REPORTE = 60000; // 60000 = 1 minuto
+    public static final int DIFERENCIA_ENTRE_REPORTES = 120000; // 60,000 = 1 minuto
+    public static final int LAPSO_PARA_CANCELAR_REPORTE = 120000; // 60000 = 1 minuto
 
     // Constantes para audio
-    public static int DURACION_AUDIO = 5000; // 15 x 4 = 60 seg
+    public static int DURACION_AUDIO = 30000; // 30 x 4 = 2 minutos
     public static String EXTENSION_AUDIO = "mp3";
 
 
@@ -40,6 +40,5 @@ public class Constantes {
     // public static String URL = "http://189.254.158.196:8888";    // SERVER
     // public static String URL = "http://10.11.126.114:8888";
 
-    // public static String URL = "http://192.168.0.9:3000";
 
 }

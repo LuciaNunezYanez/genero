@@ -2,6 +2,7 @@ package com.example.appalertagenero;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
@@ -12,7 +13,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fabInf = findViewById(R.id.fabInfo);
         FloatingActionButton fabViol = findViewById(R.id.fabViolentometro);
 
-        mostrarResultadoVista(R.drawable.ic_color_info, "¡Genere una alerta de pánico\nal presionar el botón!");
+        mostrarResultadoVista(R.drawable.ic_color_info, "¡Emita una alerta de pánico\nal presionar el botón!");
 
         //Ocultar botón cancelar alerta
         desactivarBotonCancelar();
@@ -184,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
             mostrarResultadoVista(R.drawable.ic_color_send, "Enviando..");
             PreferencesReporte.guardarReporteInicializado(getApplicationContext());
             enviarAlerta(getApplicationContext(), idComercio, idUsuario);
-
         } else{
             Log.d(TAG, "NO PUEDE GENERAR REPORTE POR QUE HAY UNO PENDIENTE!!");
         }
@@ -269,34 +268,9 @@ public class MainActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String errorResp = "Error #1: Desconocido.";
-                if (error instanceof TimeoutError) {
-                    errorResp = "Error #1: Se ha agotado el tiempo de espera.";
-                    mostrarResultadoVista(R.drawable.ic_color_error, "Se ha agotado el tiempo de espera.");
-                } else if (error instanceof NoConnectionError) {
-                    errorResp = "Error #1: Sin Conexión.";
-                    mostrarResultadoVista(R.drawable.ic_color_error, "Sin Conexión.");
-                } else if (error instanceof AuthFailureError) {
-                    errorResp = "Error #1: Falló al autenticar.";
-                    mostrarResultadoVista(R.drawable.ic_color_error, "Falló al autenticar.");
-                } else if (error instanceof ServerError) {
-                    errorResp = "Error #1: El servidor no responde.";
-                    mostrarResultadoVista(R.drawable.ic_color_error, "El servidor no responde.");
-                    Log.d(TAG, error.getMessage());
-                } else if (error instanceof NetworkError) {
-                    errorResp = "Error #1: Red";
-                    mostrarResultadoVista(R.drawable.ic_color_error, "Error de red.");
-                } else if (error instanceof ParseError) {
-                    errorResp = "Error #1: Parseo";
-                    mostrarResultadoVista(R.drawable.ic_color_error, "Error de parseo.");
-                }
-
+                String errorResp = "Error #1: " + Utilidades.tipoErrorVolley(error);
                 Notificaciones notificaciones = new Notificaciones();
                 notificaciones.crearNotificacionNormal(context, CHANNEL_ID,  R.drawable.ic_color_error, "¡No se pudo generar la alerta de pánico!", errorResp, ID_SERVICIO_WIDGET_GENERAR_ALERTA);
-                Log.d(TAG, errorResp);
-
-                Log.d(TAG, error.toString());
-                Toast.makeText(context, errorResp, Toast.LENGTH_LONG).show();
                 requestQueue.stop();
             }
         }) {
@@ -364,7 +338,6 @@ public class MainActivity extends AppCompatActivity {
     public static void terminarFotografias(Context context){
         Intent intentFotos = new Intent(context, FotografiaService.class);
         context.stopService(intentFotos);
-        Log.d(TAG, "KKKKKKKKKKKKKK");
     }
 
     /**********************************************************************************************
@@ -396,8 +369,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle parametros = intent.getExtras();
-            Log.d(TAG, "Los parametros: " + parametros);
-
             double latitud = parametros.getDouble("latitud", 0.0);
             double longitud = parametros.getDouble("longitud", 0.0);
             String fecha = parametros.getString("fecha", "");
@@ -407,14 +378,9 @@ public class MainActivity extends AppCompatActivity {
             if (latitud != 0.0 && longitud != 0.0 && reporte != 0 && !fecha.equals("")){
                 EnviarCoordenadas enviarCoordenadas = new EnviarCoordenadas();
                 Boolean hasGPS = enviarCoordenadas.enviarCoordenadas(context, latitud, longitud, fecha, reporte);
-                if(hasGPS){
-                    Log.d(TAG, "Coordenadas GPS añadidas con éxito");
+                if(hasGPS)
                     eliminarEscuchadorGPS(context);
-                    terminarGPS(context);
-                } else {
-                    Log.d(TAG, "Error al enviar coordenadas GPS");
-                    terminarGPS(context);
-                }
+                terminarGPS(context);
             } else if(latitud == 0.0 && longitud == 0.0){
                 terminarGPS(context);
             }
@@ -445,35 +411,28 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
-
             procesoImageTrasera = true;
             FECHA_TRASERA = resultData.getString("fecha");
-            Log.d(TAG, "La fecha de trasera es: " + FECHA_TRASERA);
 
             // GUARDAR LA IMAGEN DE RETORNO
             String imagenTrasera = resultData.getString("imagen");
-            if(!imagenTrasera.equals("Ninguna")){
+            if(!imagenTrasera.equals("Ninguna"))
                 IMAGEN_TRASERA = imagenTrasera;
-            }
-
-            String message = resultData.getString("mensaje");
 
             switch (resultCode) {
                 case ERROR:
                     //Toast.makeText(contextoGlobal.get(), message, Toast.LENGTH_SHORT).show();
                     break;
                 case SUCCESS:
-                    Boolean puede = PreferencesReporte.puedeCancelarAlerta(contextoGlobal.get(), System.currentTimeMillis());
-                    if (puede){
+                    // Validar si se puede cancelar la alerta
+                    if (PreferencesReporte.puedeCancelarAlerta(contextoGlobal.get(), System.currentTimeMillis())){
                         activarBotonCancelar();
                     }
                     if(procesoImagenFrontal){
                         Boolean res = EnviarImagenes.enviarImagenFrontal(contextoGlobal.get(), IMAGEN_FRONTAL, FECHA_FRONTAL, reporteCreado);
-                        Log.d(TAG, "El resultado del envio de frontal es: "+ res);
                     }
                     if(procesoImageTrasera){
                         Boolean res = EnviarImagenes.enviarImagenTrasera(contextoGlobal.get(), IMAGEN_TRASERA, FECHA_TRASERA, reporteCreado);
-                        Log.d(TAG, "El resultado del envio de trasera es: "+ res);
                     }
                     break;
             }
@@ -487,27 +446,19 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
-
             procesoImagenFrontal = true;
             FECHA_FRONTAL = resultData.getString("fecha");
-            Log.d(TAG, "La fecha de frontal es: " + FECHA_FRONTAL);
 
             // GUARDAR LA IMAGEN DE RETORNO
             String imagenFrontal = resultData.getString("imagen");
             if(!imagenFrontal.equals("Ninguna")){
                 IMAGEN_FRONTAL = imagenFrontal;
             }
-
-            String message = resultData.getString("mensaje");
-
             switch (resultCode) {
                 case ERROR:
-                    //Toast.makeText(contextoGlobal.get(), message, Toast.LENGTH_SHORT).show();
                     break;
                 case SUCCESS:
-
-                    if(contextoGlobal.get().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-
+                    if (contextoGlobal.get().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
                         // INICIAR PROCESO CAMARA TRAERA
                         resultTReceiver = new ImageTraseraResultReceiver(new Handler());
                         Intent intentTrasera = new Intent( contextoGlobal.get(), FotografiaService.class);
@@ -515,9 +466,7 @@ public class MainActivity extends AppCompatActivity {
                         intentTrasera.putExtra("tipoCamara", "trasera");
                         intentTrasera.putExtra("receiver", resultTReceiver);
                         contextoGlobal.get().startService(intentTrasera);
-
-
-                    }else {
+                     } else {
                         Boolean puede = PreferencesReporte.puedeCancelarAlerta(contextoGlobal.get(), System.currentTimeMillis());
                         if(puede){
                             activarBotonCancelar();
@@ -550,12 +499,12 @@ public class MainActivity extends AppCompatActivity {
 
     public static void activarBotonCancelar(){
         btnCancelarAlerta.setEnabled(true);
-        btnCancelarAlerta.setBackgroundColor(Color.rgb(228, 115,79));
+        btnCancelarAlerta.setBackgroundTintList(ContextCompat.getColorStateList(contextoGlobal.get(), R.color.colorAzulCGob));
     }
 
     public static void desactivarBotonCancelar(){
         btnCancelarAlerta.setEnabled(false);
-        btnCancelarAlerta.setBackgroundColor(Color.rgb(184, 181, 174));
+        btnCancelarAlerta.setBackgroundTintList(ContextCompat.getColorStateList(contextoGlobal.get(), R.color.colorGrisClaro));
     }
 
     public void cancelarAlerta(View view){

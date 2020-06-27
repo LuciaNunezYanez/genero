@@ -23,18 +23,20 @@
         <activity
             android:name=".NuevaContrasenaActivity"
             android:label="@string/title_activity_nueva_contrasena"
-            android:theme="@style/AppTheme.NoActionBar.NoActionBar"></activity>
+            android:theme="@style/AppTheme"></activity>
         <activity
             android:name=".RecuperacionActivity"
             android:label="@string/title_activity_recuperacion"
-            android:theme="@style/AppTheme.NoActionBar.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar">
 
         </activity>
-        <activity android:name=".ViolentometroActivity" />
+        <activity android:name=".ViolentometroActivity"
+            android:label="@string/title_activity_violentometro"
+            android:theme="@style/AppTheme"/>
 
         <receiver
             android:name=".Broadcast.BotonazoReceiver"
@@ -60,6 +62,7 @@
             android:name=".Servicios.GenerarAlertaService"
             android:enabled="true"
             android:exported="true" />
+
         <service
             android:name=".Servicios.GPSService"
             android:enabled="true"
@@ -69,10 +72,22 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".ConfiguracionActivity" />
-        <activity android:name=".DirectorioActivity" />
-        <activity android:name=".RegistroActivity" />
-        <activity android:name=".PerfilActivity" />
+        <activity android:name=".ConfiguracionActivity"
+            android:label="@string/title_activity_configuracion"
+            android:theme="@style/AppTheme"/>
+
+        <activity android:name=".DirectorioActivity"
+            android:label="@string/title_activity_directorio"
+            android:theme="@style/AppTheme" />
+
+        <activity android:name=".RegistroActivity"
+            android:theme="@style/AppTheme"
+            android:label="@string/title_activity_registro">
+        </activity>
+
+        <activity android:name=".PerfilActivity"
+            android:label="@string/title_activity_perfil"
+            android:theme="@style/AppTheme"/>
 
         <service
             android:name=".Servicios.FotografiaService"

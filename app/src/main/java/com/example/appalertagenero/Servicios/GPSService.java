@@ -112,24 +112,6 @@ public class GPSService extends Service {
                 Log.d(TAG, "GPS "+ "Error al finalizar");
                 throwable.printStackTrace();
             }
-
-            String direccionCompleta = "";
-            try {
-                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-                List<Address> list = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
-
-                /*if (!list.isEmpty()) {
-                    Address direccion = list.get(0);
-                    Log.d(TAG, direccion.toString());
-                    list.get(0).get
-                    direccionCompleta = direccion.getAddressLine(0);
-                    Log.d(TAG, "La dirección completa es: " + direccionCompleta);
-                }*/
-            } catch (IOException e) {
-                Log.e(TAG, "Error #8: " + e.getMessage());
-                e.printStackTrace();
-            }
-
             darResultados(getApplicationContext(), loc.getLatitude(), loc.getLongitude(), "Se localizó ubicación");
             stopSelf();
         }
@@ -138,13 +120,11 @@ public class GPSService extends Service {
         @Override
         public void onProviderDisabled(String provider) {
             // Este metodo se ejecuta cuando el GPS es desactivado
-            //Toast.makeText(getApplicationContext(), "Error #8: GPS Desactivado", Toast.LENGTH_LONG).show();
             Log.d(TAG, "GPS Desactivado");
         }
         @Override
         public void onProviderEnabled(String provider) {
             // Este metodo se ejecuta cuando el GPS es activado
-            //Toast.makeText(getApplicationContext(), "Error #8: GPS Activado", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "GPS Activado");
         }
         @Override

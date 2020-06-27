@@ -26,6 +26,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.appalertagenero.Broadcast.BotonazoReceiver;
+import com.example.appalertagenero.Constantes;
 import com.example.appalertagenero.R;
 import com.example.appalertagenero.Utilidades.EnviarCoordenadas;
 import com.example.appalertagenero.Utilidades.EnviarImagenes;
@@ -95,10 +96,7 @@ public class ServicioNotificacion extends Service {
             Bundle params = intent.getExtras();
             String padre = params.getString("padre");
             crearNotificacionPersistente();
-        } else {
-            //Toast.makeText(getApplicationContext(), "Recibí intent NULL", Toast.LENGTH_LONG).show();
         }
-
         //return super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -125,14 +123,10 @@ public class ServicioNotificacion extends Service {
         if(puedeEnviar){
             PreferencesReporte.guardarReporteInicializado(getApplicationContext());
             registrarReceiverGnerarAlerta();
-
-            //registrarEscuchadorGPS();
             iniciarServicioGenerarAlerta();
 
         } else{
             deboTerminar();
-            // Crear servicio especifico para el servicio de emit() contador
-            Log.d(TAG, "NO PUEDE GENERAR REPORTE POR QUE HAY UNO PENDIENTE!!");
         }
     }
 
@@ -162,9 +156,9 @@ public class ServicioNotificacion extends Service {
         Intent intent = new Intent(getApplicationContext(), GenerarAlertaService.class);
         intent.putExtra("comercio", idComercio);
         intent.putExtra("usuario", idUsuario);
-        intent.putExtra("sala", "Comercios");
+        intent.putExtra("sala", "Genero");
         intent.putExtra("fecha", Utilidades.obtenerFecha());
-        intent.setPackage("com.id.socketio");
+        intent.setPackage("com.example.appalertagenero");
         getApplicationContext().startService(intent);
     }
 
@@ -196,7 +190,6 @@ public class ServicioNotificacion extends Service {
                 // ENVIA LA IMAGEN FRONTAL (2)
                 Boolean res = EnviarImagenes.enviarImagenFrontal(getApplicationContext(), IMAGEN_FRONTAL, FECHA_FRONTAL, reporteCreado);
                 calcularNuevoEnvioFotografias();
-                Log.d(TAG, "El resultado del envio de frontal es: "+ res);
             } else{
                 // TERMINA PROCESO Y NO ENVIA NADA (3)
                 finProcesoFotografias();
@@ -206,8 +199,6 @@ public class ServicioNotificacion extends Service {
 
     public void calcularNuevoEnvioFotografias(){
         ciclo--;
-        Log.d(TAG, "CICLO: "+ ciclo);
-
         if(ciclo != 0){
             // Iniciar nuevamente el proceso de fotografias
             iniciarProcesoFotografias();
@@ -277,8 +268,6 @@ public class ServicioNotificacion extends Service {
 
             procesoImageTrasera = true;
             FECHA_TRASERA = resultData.getString("fecha");
-            Log.d(TAG, "La fecha de trasera es: " + FECHA_TRASERA);
-
             // GUARDAR LA IMAGEN DE RETORNO
             String imagenTrasera = resultData.getString("imagen");
             if(!imagenTrasera.equals("Ninguna")){
@@ -294,13 +283,10 @@ public class ServicioNotificacion extends Service {
                     // ENVIAR MULTIMEDIA (1)
                     if(procesoImagenFrontal){
                         Boolean res = EnviarImagenes.enviarImagenFrontal(getApplicationContext(), IMAGEN_FRONTAL, FECHA_FRONTAL, reporteCreado);
-                        Log.d(TAG, "El resultado del envio de frontal es: "+ res);
                     }
                     if(procesoImageTrasera){
                         Boolean res = EnviarImagenes.enviarImagenTrasera(getApplicationContext(), IMAGEN_TRASERA, FECHA_TRASERA, reporteCreado);
-                        Log.d(TAG, "El resultado del envio de trasera es: "+ res);
                     }
-
                     calcularNuevoEnvioFotografias();
                     break;
             }
@@ -317,7 +303,6 @@ public class ServicioNotificacion extends Service {
 
             procesoImagenFrontal = true;
             FECHA_FRONTAL = resultData.getString("fecha");
-            Log.d(TAG, "La fecha de frontal es: " + FECHA_FRONTAL);
 
             // GUARDAR LA IMAGEN DE RETORNO
             String imagenFrontal = resultData.getString("imagen");
@@ -327,7 +312,6 @@ public class ServicioNotificacion extends Service {
 
             switch (resultCode) {
                 case ERROR:
-
                     Log.d(TAG, "Ocurrió un error al devolver cámara frontal");
                     // SE SIGUE CON LA TRASERA
                     break;
@@ -346,7 +330,6 @@ public class ServicioNotificacion extends Service {
                             // ENVIAR LA IMAGEN FRONTAL (5)
                             Boolean res = EnviarImagenes.enviarImagenFrontal(getApplicationContext(), IMAGEN_FRONTAL, FECHA_FRONTAL, reporteCreado);
                             calcularNuevoEnvioFotografias();
-                            Log.d(TAG, "El resultado del envio de frontal es: "+ res);
                         } else{
                             // FIN DEL PROCESO (6)
                             finProcesoFotografias();
@@ -399,8 +382,6 @@ public class ServicioNotificacion extends Service {
                 if (reporteCreado != 0) {
                     // Guardar la información del ultimo reporte generado
                     PreferencesReporte.actualizarUltimoReporte(getApplicationContext(), reporteCreado);
-                    //Toast.makeText(context, "Se creó el reporte desde la notificación. Folio #" + reporteCreado, Toast.LENGTH_LONG).show();
-
                     Notificaciones notificaciones = new Notificaciones();
                     notificaciones.crearNotificacionNormal(context, CHANNEL_ID,  R.drawable.ic_color_success, "¡Alerta enviada!", "Se generó alerta con folio #" + reporteCreado, ID_SERVICIO_WIDGET_GENERAR_ALERTA);
 
@@ -423,7 +404,6 @@ public class ServicioNotificacion extends Service {
                     if(ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
                         iniciarProcesoFotografias();
                     } else {
-                        //Toast.makeText(context, "No tiene permisos de camara", Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "No tiene permisos de camara");
                     }
 
@@ -433,7 +413,7 @@ public class ServicioNotificacion extends Service {
                 }
 
             } catch (Exception e){
-                Log.e(TAG, "Catcj broadscast receiver generar alerta: " + e.getMessage());
+                Log.e(TAG, "Catch broadscast receiver generar alerta: " + e.getMessage());
             }
         }
     };
@@ -453,14 +433,11 @@ public class ServicioNotificacion extends Service {
                 EnviarCoordenadas enviarCoordenadas = new EnviarCoordenadas();
                 Boolean hasGPS = enviarCoordenadas.enviarCoordenadas(getApplicationContext(), latitud, longitud, fecha, reporte);
                 if(hasGPS){
-                    Log.d(TAG, "Coordenadas GPS añadidas con éxito");
-
                     terminarServicioGPS();
                     deboTerminar();
                 } else {
                     terminarServicioGPS();
                     deboTerminar();
-                    Log.d(TAG, "Error al enviar coordenadas GPS");
                 }
             }
         }
@@ -471,20 +448,11 @@ public class ServicioNotificacion extends Service {
     private BroadcastReceiver broadcastReceiverAudio = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Bundle parametros = intent.getExtras();
-            boolean termino = parametros.getBoolean("termino");
-
-            Log.d(TAG, "Respondió Servicio audio");
-            if(termino){
+            if(intent.getExtras().getBoolean("termino")){
                 terminarGrabacionAudio();
-                boolean terminoAudio = Utilidades.isMyServiceRunning(getApplicationContext(), AudioService.class);
-                Log.d(TAG, "TERMINÓ AUDIO SERVICE? " + terminoAudio);
-                deboTerminar();
-            } else {
-                Log.d(TAG, "Termino mal Audio");
-                //eliminarEscuchadorAudio();
-                deboTerminar();
+                Log.d(TAG, "TERMINÓ AUDIO SERVICE? " + Utilidades.isMyServiceRunning(getApplicationContext(), AudioService.class));
             }
+            deboTerminar();
         }
     };
 
@@ -502,16 +470,11 @@ public class ServicioNotificacion extends Service {
         }
     }
 
-    public void crearNotificacionPersistente(){
-
-        // Log.d(TAG,"¡Se creó notificación persistente!");
-
+    public void crearNotificacionPersistente(){ // Crear notificación de servicio activo
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Intent notificationIntent = new Intent(getApplicationContext(), ServicioNotificacion.class);
-            PendingIntent pendingIntent =
-                    PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
 
-            // Crear notificación de servicio activo
             Notification notification =
                     new Notification.Builder(getApplicationContext(), CHANNEL_ID)
                             .setColor(Color.WHITE)
@@ -520,23 +483,16 @@ public class ServicioNotificacion extends Service {
                             .setColor(Color.GRAY)
                             .setContentIntent(pendingIntent)
                             .build();
-
-            // Crear al canal de notificación, pero solo en API 26+
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                CharSequence nombre = "Alerta de género"; //2
-                String descripcion = "El uso de este servicio le permite detectar cuando se presiona tres veces el botón de bloqueo y genera la alerta de pánico"; //
-                int importancia = NotificationManager.IMPORTANCE_HIGH;
-
-                NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, nombre, importancia);
-                notificationChannel.setDescription(descripcion);
-                NotificationManager notificationManager = getSystemService(NotificationManager.class);
-                notificationManager.createNotificationChannel(notificationChannel);
-            }
+            // Crear Canal de notificaciones
+            String descripcion = "El uso de este servicio le permite detectar cuando se presiona tres veces el botón de bloqueo y genera la alerta de pánico"; //
+            int importancia = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, Constantes.NOMBRE_APP, importancia);
+            notificationChannel.setDescription(descripcion);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(notificationChannel);
 
             startForeground(ID_SERVICIO_PANICO, notification);
             Toast.makeText(getApplicationContext(), "¡Se creó servicio para detectar alerta a traves del botón de bloqueo!", Toast.LENGTH_LONG).show();
-            Log.d(TAG,"Se inicio servicio para API 26+ - Desde servicio prueba!");
-
         } else{
             Toast.makeText(getApplicationContext(), "¡Se creó servicio para detectar alerta a traves del botón de bloqueo!", Toast.LENGTH_LONG).show();
         }
@@ -545,7 +501,6 @@ public class ServicioNotificacion extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Toast.makeText(getApplicationContext(), "On Destroy", Toast.LENGTH_LONG).show();
         // Cancela el registro del BroadCast Creo que debo cancelar todas las suscripciones
         unregisterReceiver(botonazoReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiverBotonazo);

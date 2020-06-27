@@ -4,20 +4,14 @@ import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.appalertagenero.Constantes;
-import com.example.appalertagenero.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,12 +24,9 @@ public class EnviarCoordenadas {
 
     public static Boolean enviarCoordenadas(final Context context, Double latitud, Double longitud, String fecha, int reporteCreado){
         StringRequest requestCoordenadas;
-        Boolean seEnviaron = false;
+        Boolean seEnviaron;
 
-        if(reporteCreado >=1 ){
-            // COMIENZA HILO PARA ENVIAR IMAGEN FRONTAL
-            Log.d(TAG, "Comienza hilo para enviar coordenadas GPS ");
-
+        if(reporteCreado >=1 ) {
             String URL = Constantes.URL + "/coordenadas/" + reporteCreado;
 
             final RequestQueue requestQueue = Volley.newRequestQueue(context);
@@ -77,22 +68,7 @@ public class EnviarCoordenadas {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    String errorResp = "Error #3: " + R.string.error_desconocido;
-
-                    if (error instanceof TimeoutError) {
-                        errorResp = "Error #3: " + R.string.error_tiempo_agotado;
-                    } else if (error instanceof NoConnectionError) {
-                        errorResp = "Error #3: " + R.string.error_sin_conexion;
-                    } else if (error instanceof AuthFailureError) {
-                        errorResp = "Error #3: " + R.string.error_fallo_autenticar;
-                    } else if (error instanceof ServerError) {
-                        errorResp = "Error #3: " + R.string.error_servidor;
-                    } else if (error instanceof NetworkError) {
-                        errorResp = "Error #3: " + R.string.error_red;
-                    } else if (error instanceof ParseError) {
-                        errorResp = "Error #3: " + R.string.error_parseo;
-                    }
-                    //Toast.makeText(context, errorResp, Toast.LENGTH_SHORT).show();
+                    String errorResp = "Error #3: " + Utilidades.tipoErrorVolley(error);
                     Log.e(TAG, errorResp);
                     requestQueue.stop();
                 }
@@ -112,20 +88,13 @@ public class EnviarCoordenadas {
                     }
                 }
             };
-
-            // Código de prueba. Puede generar errores
-            // requestCoordenadas.setRetryPolicy(new DefaultRetryPolicy(5000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
             requestQueue.add(requestCoordenadas);
             seEnviaron = true;
-
         } else if (reporteCreado == -1){
             seEnviaron = false;
-
         } else {
             Log.d(TAG, "Se agotó el tiempo de espera para coordenadas!!! ");
             seEnviaron = false;
-
         }
         return seEnviaron;
     }

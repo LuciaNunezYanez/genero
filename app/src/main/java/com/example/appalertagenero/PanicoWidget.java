@@ -16,17 +16,9 @@ import com.example.appalertagenero.Utilidades.Utilidades;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Implementation of App Widget functionality.
- */
-
 public class PanicoWidget extends AppWidgetProvider {
 
     static WeakReference<Context> contextoGlobal;
-    int reporteCreado;
-    int idComercio;
-    int idUsuario;
-
     static String TAG = "ServicioWidget";
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,

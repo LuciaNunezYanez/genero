@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AppAlertaGenero</string>
+    <string name="app_name">Alerta de género</string>
     <!-- Escritura de imagen fallida. Compruebe si ha otorgado el permiso WRITE_EXTERNAL_STORAGE-->
     <string name="error_cannot_write">No se puede escribir la imagen capturada por la cámara.</string>
     <!--cámara abierta fallida. Probablemente porque otra aplicación está usando la cámara -->
@@ -11,13 +11,8 @@
     <string name="btn_tittle_capture_image">Capturar imagen,</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
-    <string name="title_activity_configuracion">Configuración</string>
+    <string name="title_activity_configuracion">Configuración y permisos</string>
     <string name="title_activity_permisos">permisos</string>
-
-    <string name="explicacion_almacenamiento">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
-    <string name="explicacion_camara">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
-    <string name="explicacion_ubicacion">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
-    <string name="explicacion_audio">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
 
     <string name="error_tiempo_agotado">Tiempo agotado</string>
     <string name="error_sin_conexion">Sin conexión</string>
@@ -26,39 +21,14 @@
     <string name="error_red">Red</string>
     <string name="error_parseo">Parseo</string>
     <string name="error_desconocido">Desconocido</string>
-    <string name="title_activity_registro">registro</string>
-    <string name="title_activity_directorio">Directorio</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="menu_tools">Tools</string>
-    <string name="menu_share">Share</string>
-    <string name="menu_send">Send</string>
+    <string name="title_activity_registro">Ingresa tus datos</string>
+    <string name="title_activity_directorio">Directorio de centros de atención</string>
+    <string name="title_activity_violentometro">Violentómetro</string>
+    <string name="title_activity_main2">Main Activity</string>
+    <string name="title_activity_perfil">Mi información</string>
     <string name="title_activity_login">LoginActivity</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="title_activity_recuperacion">RecuperacionActivity</string>
-    <string name="title_activity_nueva_contrasena">NuevaContrasenaActivity</string>
+    <string name="action_settings">Configuración</string>
+    <string name="title_activity_recuperacion">Recuperar cuenta</string>
+    <string name="title_activity_nueva_contrasena">Cambiar contraseña</string>
 </resources>

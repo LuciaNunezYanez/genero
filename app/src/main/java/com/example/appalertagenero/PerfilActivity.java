@@ -26,9 +26,6 @@ public class PerfilActivity extends AppCompatActivity {
     TextView txtEntreCalles;
     TextView txtFachada;
 
-    /*TextView txt;
-    TextView txt;
-    TextView txt;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -55,8 +55,6 @@ public class FotografiaService extends HiddenCameraService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            Log.d(TAG, "Estoy en Service");
-
             // Recuperar datos del reporte
             reporteCreado = intent.getIntExtra("reporteCreado", 0);
             tipoCamara = intent.getStringExtra("tipoCamara");
@@ -74,8 +72,6 @@ public class FotografiaService extends HiddenCameraService {
             }
 
             receiver = intent.getParcelableExtra("receiver");
-
-            Log.d(TAG,"Va en onStartCommand");
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_GRANTED) {
 
@@ -92,12 +88,9 @@ public class FotografiaService extends HiddenCameraService {
 
                     startCamera(cameraConfig);
 
-                    //responderReceiver(ERROR, imagen,"Se detuvo manualmente" );
-
                     new android.os.Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            // Toast.makeText(getApplicationContext(),"Capturando imagen" + tipoCamara + "..", Toast.LENGTH_SHORT).show();
                             //Log.d(TAG, "Estoy capturando... "+ tipoCamara);
                             takePicture();
                         }
@@ -113,8 +106,8 @@ public class FotografiaService extends HiddenCameraService {
             }
         }catch(Exception e)
         {
-            Log.d(TAG, "Calló en el catch");
-            responderReceiver(ERROR, imagen, "Calló en el catch");
+            Log.d(TAG, "Cayó en el catch");
+            responderReceiver(ERROR, imagen, "Cayó en el catch");
             stopSelf();
         }
         return START_NOT_STICKY;
@@ -134,7 +127,6 @@ public class FotografiaService extends HiddenCameraService {
 
     @Override
     public void onCameraError(@CameraError.CameraErrorCodes int errorCode) {
-        Log.d(TAG,"Va en 11");
         String error = "Desconocido";
         switch (errorCode) {
             case CameraError.ERROR_CAMERA_OPEN_FAILED:

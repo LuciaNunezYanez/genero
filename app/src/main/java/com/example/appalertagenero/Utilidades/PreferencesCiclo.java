@@ -10,8 +10,7 @@ public class PreferencesCiclo {
     * */
 
     public static Boolean guardarCicloFotografias(Context context, int cicloFotografias){
-
-        try{
+        try {
             android.content.SharedPreferences preferencesCiclo = context.getSharedPreferences("CicloFotografias", Context.MODE_PRIVATE);
             android.content.SharedPreferences.Editor editorCiclo = preferencesCiclo.edit();
             editorCiclo.putInt("ciclo", cicloFotografias);
@@ -26,7 +25,7 @@ public class PreferencesCiclo {
         int ciclo = 1;
         android.content.SharedPreferences preferences = context.getSharedPreferences("CicloFotografias", Context.MODE_PRIVATE);
         if (preferences.contains("ciclo")) {
-            ciclo = preferences.getInt("ciclo", 1);
+            ciclo = preferences.getInt("ciclo", ciclo);
         }
         return ciclo;
     }

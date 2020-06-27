@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:background="@color/colorRosaClaro"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/textView7"
@@ -35,7 +36,8 @@
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="#EEC5C5C5"
-        android:orientation="vertical"/>
+        android:orientation="vertical"
+        android:visibility="gone" />
 
 
     <ScrollView
@@ -60,7 +62,7 @@
                 android:gravity="bottom|center"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-                android:text="NO IMPORTA EN QÚE NIVEL TE IDENTIFIQUES, LA VIOLENCIA NO ES NORMAL, DETÉNLA"
+                android:text="NO IMPORTA EN QUÉ NIVEL TE IDENTIFIQUES, LA VIOLENCIA NO ES NORMAL, DETÉNLA"
                 android:textColor="@color/colorAzulFuerte"
                 android:textSize="18sp" />
 
