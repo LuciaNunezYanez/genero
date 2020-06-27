@@ -44,7 +44,6 @@
         android:gravity="center"
         android:hint="Correo electrónico"
         android:inputType="textEmailAddress"
-        android:text="14040463@itdurango.edu.mx"
         android:textColor="@color/colorRosaGuinda"
         android:textSize="20sp" />
 
@@ -84,7 +83,6 @@
         android:hint="Código de recuperación"
         android:inputType="text"
         android:maxLength="8"
-        android:text="NFVDPWEC"
         android:textColor="@color/colorRosaGuinda"
         android:textSize="20sp" />
 
