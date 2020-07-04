@@ -90,6 +90,9 @@ public class Utilidades {
     }
 
     public static String tipoErrorVolley(VolleyError error){
+        Log.d("ERROROROOR", "LLEGA AQUI");
+        if(error == null)
+            Log.d("ERROROROOR", "ERROR NULL");
         if (error instanceof TimeoutError) {
             return "Problema con el servidor";
         } else if (error instanceof NoConnectionError) {

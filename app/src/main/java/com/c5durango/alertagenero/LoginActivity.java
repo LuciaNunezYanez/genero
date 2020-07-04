@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void iniciarSesion(final String correo, final String contrasena){
         final RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        String URL = Constantes.URL + "/login/app/";
+        final String URL = Constantes.URL + "/login/app/";
 
         JSONObject jsonObjectBody = new JSONObject();
         try {
@@ -106,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        //Log.d(TAG, error.getMessage());
                         Toast.makeText(getApplicationContext(),  Utilidades.tipoErrorVolley(error), Toast.LENGTH_SHORT).show();
                     }
                 }

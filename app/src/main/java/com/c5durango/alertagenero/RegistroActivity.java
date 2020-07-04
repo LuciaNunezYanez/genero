@@ -141,56 +141,55 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         btnSiguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                try {
+                    stCorreo = txtCorreo.getText().toString();
+                    stNombres = txtNombres.getText().toString();
+                    stPaterno = txtPaterno.getText().toString();
+                    stMaterno = txtMaterno.getText().toString();
+                    stNacimiento = dateNacimiento.getText().toString();
+                    stPadecimientos = areaPadecimientos.getText().toString();
+                    stTelefonoM = txtTelefonoM.getText().toString();
+                    stAlergias = areaAlergias.getText().toString();
+                    String s = spSexo.getSelectedItem().toString();
+                    if(s.equals("Femenino"))
+                        stSexo = "F";
+                    if(s.equals("Masculino"))
+                        stSexo = "M";
+                    if(s.equals("Desconocido"))
+                        stSexo = "D";
+                    if(s.equals("Seleccionar"))
+                        stSexo = "";
 
-                try{
-                stCorreo = txtCorreo.getText().toString();
-                stNombres = txtNombres.getText().toString();
-                stPaterno = txtPaterno.getText().toString();
-                stMaterno = txtMaterno.getText().toString();
-                stNacimiento = dateNacimiento.getText().toString();
-                stPadecimientos = areaPadecimientos.getText().toString();
-                stTelefonoM = txtTelefonoM.getText().toString();
-                stAlergias = areaAlergias.getText().toString();
-                String s = spSexo.getSelectedItem().toString();
-                if(s.equals("Femenino"))
-                    stSexo = "F";
-                if(s.equals("Masculino"))
-                    stSexo = "M";
-                if(s.equals("Desconocido"))
-                    stSexo = "D";
-                if(s.equals("Seleccionar"))
-                    stSexo = "";
+                    stSangre = spSangre.getSelectedItem().toString();
+                    if(accion.equals("nuevo") || accion.equals("edicion"))
+                        stContrasena = txtContrasena.getText().toString();
 
-                stSangre = spSangre.getSelectedItem().toString();
-                if(accion.equals("nuevo") || accion.equals("edicion"))
-                    stContrasena = txtContrasena.getText().toString();
+                    if(stSangre.equals("Seleccionar"))
+                        stSangre = "";
 
-                if(stSangre.equals("Seleccionar"))
-                    stSangre = "";
-
-                if(!Utilidades.validEmail(stCorreo)) {
-                    Toast.makeText(getApplicationContext(), "Correo electrónico inválido", Toast.LENGTH_LONG).show();
-                } else if(stContrasena.length() < 8){
-                    Toast.makeText(getApplicationContext(), "¡Introducir contraseña con al menos 8 caractéres!", Toast.LENGTH_LONG).show();
-                } else if( stNombres.length() < 3 || stPaterno.length() < 3) {
-                    Toast.makeText(getApplicationContext(), "Nombre(s) o apellido paterno inválido", Toast.LENGTH_LONG).show();
-                } else if(stSexo.equals("")) {
-                    Toast.makeText(getApplicationContext(), "Seleccione sexo por favor", Toast.LENGTH_LONG).show();
-                } else if(stTelefonoM.length() != 10 || !Utilidades.validPhone(stTelefonoM)) {
-                    try {
-                        int tel = Integer.parseInt(stTelefonoM);
-                        Toast.makeText(getApplicationContext(), "Teléfono inválido, solo 10 digitos", Toast.LENGTH_LONG).show();
-                    } catch (Exception e){
-                        Toast.makeText(getApplicationContext(), "¡El teléfono debe contener solo números!", Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    if(editar){
-                        actualizarUsuario(id_usuario);
+                    if(!Utilidades.validEmail(stCorreo)) {
+                        Toast.makeText(getApplicationContext(), "Correo electrónico inválido", Toast.LENGTH_LONG).show();
+                    } else if(stContrasena.length() < 8){
+                        Toast.makeText(getApplicationContext(), "¡Introducir contraseña con al menos 8 caractéres!", Toast.LENGTH_LONG).show();
+                    } else if( stNombres.length() < 3 || stPaterno.length() < 3) {
+                        Toast.makeText(getApplicationContext(), "Nombre(s) o apellido paterno inválido", Toast.LENGTH_LONG).show();
+                    } else if(stSexo.equals("")) {
+                        Toast.makeText(getApplicationContext(), "Seleccione sexo por favor", Toast.LENGTH_LONG).show();
+                    } else if(stTelefonoM.length() != 10 || !Utilidades.validPhone(stTelefonoM)) {
+                        try {
+                            int tel = Integer.parseInt(stTelefonoM);
+                            Toast.makeText(getApplicationContext(), "Teléfono inválido, solo 10 digitos", Toast.LENGTH_LONG).show();
+                        } catch (Exception e){
+                            Toast.makeText(getApplicationContext(), "¡El teléfono debe contener solo números!", Toast.LENGTH_LONG).show();
+                        }
                     } else {
-                        linearPersonales.setVisibility(View.GONE);
-                        linearDomicilio.setVisibility(View.VISIBLE);
-                    }
-                }}
+                        if(editar){
+                            actualizarUsuario(id_usuario);
+                        } else {
+                            linearPersonales.setVisibility(View.GONE);
+                            linearDomicilio.setVisibility(View.VISIBLE);
+                        }
+                    }}
                 catch(Exception e){
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
@@ -705,13 +704,14 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
 
         try {
             StringRequest requestGetMunicipios;
-            String URL = Constantes.URL + "/municipios/" + id_estado;
+            final String URL = Constantes.URL + "/municipios/" + id_estado;
 
             final RequestQueue requestQueue = Volley.newRequestQueue(context);
 
             requestGetMunicipios = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
+                    Log.i(TAG, "La respuesta al obtener " + URL);
                     Log.i(TAG, "La respuesta al obtener los municipios es: " + response);
 
                     try {

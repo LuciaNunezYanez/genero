@@ -26,7 +26,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.c5durango.alertagenero.Constantes;
 import com.c5durango.alertagenero.R;
 import com.c5durango.alertagenero.Utilidades.EnviarCoordenadas;
-import com.c5durango.alertagenero.Utilidades.EnviarImagenes;
+//import com.c5durango.alertagenero.Utilidades.EnviarImagenes;
 import com.c5durango.alertagenero.Utilidades.Notificaciones;
 import com.c5durango.alertagenero.Utilidades.PreferencesReporte;
 import com.c5durango.alertagenero.Utilidades.Utilidades;
@@ -40,8 +40,8 @@ public class ServicioWidget extends Service {
     String TAG = "ServicioWidget";
 
     // VARIABLES PARA USO DE MULTIMEDIA
-    ImageTraseraResultReceiver resultTReceiver;
-    ImageFrontalResultReceiver resultFReceiver;
+    //ImageTraseraResultReceiver resultTReceiver;
+    //ImageFrontalResultReceiver resultFReceiver;
     //int ciclo = 1;
 
     public static final int SUCCESS = 1;
@@ -171,7 +171,7 @@ public class ServicioWidget extends Service {
      *                                      FOTOGRAFIAS                                            *
      **********************************************************************************************/
 
-    public void iniciarProcesoFotografias(){
+    /*public void iniciarProcesoFotografias(){
         if( getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT) ){
             // INICIAR PROCESO CAMARA FRONTAL
             resultFReceiver = new ImageFrontalResultReceiver(new Handler());
@@ -201,12 +201,12 @@ public class ServicioWidget extends Service {
                 finProcesoFotografias();
             }
         }
-    }
+    }*/
 
-    public void terminarServicioFotografias(){
+    /*public void terminarServicioFotografias(){
         Intent intent = new Intent(getApplicationContext(), FotografiaService.class);
         getApplicationContext().stopService(intent);
-    }
+    }*/
 
     public void finProcesoFotografias(){
         Log.d(TAG, "Termina proceso vacio de fotografias");
@@ -251,7 +251,7 @@ public class ServicioWidget extends Service {
      *                     INICIAN RESULT RECEIVER DE FOTOGRAFIAS                                 *
      *********************************************************************************************/
 
-    private class ImageTraseraResultReceiver extends ResultReceiver {
+    /*private class ImageTraseraResultReceiver extends ResultReceiver {
         public ImageTraseraResultReceiver(Handler handler) {
             super(handler);
         }
@@ -338,7 +338,7 @@ public class ServicioWidget extends Service {
             }
             super.onReceiveResult(resultCode, resultData);
         }
-    }
+    }*/
 
     /*public void calcularNuevoEnvioFotografias(){
         ciclo--;
