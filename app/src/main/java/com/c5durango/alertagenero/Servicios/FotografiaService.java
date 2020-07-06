@@ -103,8 +103,7 @@ public class FotografiaService extends HiddenCameraService {
                 Log.d(TAG, "Permiso de cámara no disponible");
                 responderReceiver(ERROR, imagen,"Permiso de cámara no disponible" );
             }
-        }catch(Exception e)
-        {
+        } catch(Exception e) {
             Log.d(TAG, "Cayó en el catch");
             responderReceiver(ERROR, imagen, "Cayó en el catch");
             stopSelf();

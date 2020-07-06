@@ -206,12 +206,12 @@ public class ServicioWidget extends Service {
     /*public void terminarServicioFotografias(){
         Intent intent = new Intent(getApplicationContext(), FotografiaService.class);
         getApplicationContext().stopService(intent);
-    }*/
+    }
 
     public void finProcesoFotografias(){
         Log.d(TAG, "Termina proceso vacio de fotografias");
         // Al menos guardar las fotografía en el dispositivo
-    }
+    }*/
 
     /*********************************************************************************************
      *                                        GPS                                                 *
@@ -434,7 +434,6 @@ public class ServicioWidget extends Service {
                 EnviarCoordenadas enviarCoordenadas = new EnviarCoordenadas();
                 Boolean hasGPS = enviarCoordenadas.enviarCoordenadas(getApplicationContext(), latitud, longitud, fecha, reporte);
                 if(hasGPS){
-                    Log.d(TAG, "Coordenadas GPS añadidas con éxito");
                     eliminarEscuchadorGPS();
                     terminarServicioGPS();
                 } else {

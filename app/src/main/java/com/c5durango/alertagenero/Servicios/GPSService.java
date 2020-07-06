@@ -53,11 +53,6 @@ public class GPSService extends Service {
         Local = new Localizacion();
         final boolean gpsEnabled = mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-        // PRUEBA
-        Intent intent = new Intent("GPSService");
-        intent.putExtra("fecha", fechaActual);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-
         if (!gpsEnabled) {
             // GPS Desactivado
             darResultados(getApplicationContext(),0.0, 0.0, "GPS Deshabilitado");
@@ -99,7 +94,6 @@ public class GPSService extends Service {
             stopSelf();
         }
 
-
         @Override
         public void onProviderDisabled(String provider) {
             // Este metodo se ejecuta cuando el GPS es desactivado
@@ -115,7 +109,6 @@ public class GPSService extends Service {
             Log.d(TAG, "GPS "+ "El estatus cambió");
         }
     }
-
 
     private void darResultados(Context context, Double latitud, Double longitud, String mensaje){
         Intent intent = new Intent("GPSService");

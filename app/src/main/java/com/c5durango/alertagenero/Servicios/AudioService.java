@@ -51,7 +51,7 @@ public class AudioService extends Service  {
     MediaPlayer mediaPlayer;
     Boolean hasStart = false;
     String TAG = "AudioServiceT";
-    String padre = "desc";
+    //String padre = "desc";
 
     GrabarAudioBackground grabarAudioBackground;
 
@@ -76,7 +76,7 @@ public class AudioService extends Service  {
         if (intent != null) {
             nombreAudio = intent.getStringExtra("nombreAudio");
             reporteCreado = intent.getIntExtra("reporteCreado", 0);
-            padre = intent.getStringExtra("padre");
+            //padre = intent.getStringExtra("padre");
             crearNotificacionPersistente();
             comenzarHiloGrabacionAudio(contadorRecorder);
 
@@ -220,6 +220,7 @@ public class AudioService extends Service  {
         }
 
         private void iniciarGrabacion(){
+
             AudioSavePathInDevice = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + nombreAudio + "_" + posicionParaGuardar + "." + EXTENSION_AUDIO;
             mediaRecorder = new MediaRecorder();
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -253,7 +254,6 @@ public class AudioService extends Service  {
             switch (what){
                 case MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED:
                     mediaRecorder.stop();
-                    //mediaRecorder.release(); // No funciona
                     onPostExecute(AudioSavePathInDevice);
                     break;
             }
@@ -272,19 +272,6 @@ public class AudioService extends Service  {
         }
     }
 
-    /*private void reproducir(String path) {
-        mediaPlayer = new MediaPlayer();
-        try {
-            mediaPlayer.setDataSource(path);
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        mediaPlayer.start();
-        Log.d(TAG, "(reproducir) Reproduciendo audio.");
-    }*/
-
     public void crearNotificacionPersistente(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Intent notificationIntent = new Intent(getApplicationContext(), AudioService.class);
@@ -296,7 +283,7 @@ public class AudioService extends Service  {
                     new Notification.Builder(getApplicationContext(), CHANNEL_ID)
                             .setColor(Color.WHITE)
                             .setContentText("Grabando audio..")
-                            .setSmallIcon(R.drawable.ic_siren_chica)
+                            .setSmallIcon(R.drawable.ic_microfono)
                             .setColor(Color.GRAY)
                             .setContentIntent(pendingIntent)
                             .build();
@@ -312,7 +299,6 @@ public class AudioService extends Service  {
             startForeground(ID_SERVICIO_AUDIO, notification);
 
         } else{
-            Log.d(TAG,"XXXXXXXXXXX SERVICIO PARA NO MENOR A OREO!");
             //Notificaciones.crearNotificacionNormalV2(getApplicationContext(), CHANNEL_ID, R.drawable.ic_camara, "AudioService", "En ejecución", ID_SERVICIO_WIDGET_GRABAR_AUDIO, AudioService.class);
 
             Intent notificationIntent = new Intent(getApplicationContext(), AudioService.class);
@@ -324,7 +310,7 @@ public class AudioService extends Service  {
                     new Notification.Builder(getApplicationContext())
                             .setColor(Color.WHITE)
                             .setContentText("Grabando audio..")
-                            .setSmallIcon(R.drawable.ic_siren_chica)
+                            .setSmallIcon(R.drawable.ic_microfono)
                             .setColor(Color.GRAY)
                             .setContentIntent(pendingIntent)
                             .build();

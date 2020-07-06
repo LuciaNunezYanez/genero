@@ -69,8 +69,6 @@ public class PreferencesReporte {
     // Una vez que el reporte se haya generado es necesario
     // modificar el ultimo reporte como enviado.
     public static Boolean actualizarUltimoReporte(Context context, int reporteCreado){
-        Boolean seActualizo;
-
         try{
             android.content.SharedPreferences preferences = context.getSharedPreferences("UltimoReporte", Context.MODE_PRIVATE);
             android.content.SharedPreferences.Editor editor = preferences.edit();
@@ -80,14 +78,13 @@ public class PreferencesReporte {
                 editor.putInt("ultimoReporte", reporteCreado);
                 editor.putBoolean("estatusReporte", true);
                 editor.commit();
-                seActualizo = true;
+                return true;
             } else {
-                seActualizo = false;
+                return false;
             }
         } catch (Exception e){
-            seActualizo = false;
+            return false;
         }
-        return seActualizo;
     }
 
     public static Boolean puedeCancelarAlerta(Context context, Long fechaHoraActual){
@@ -110,5 +107,4 @@ public class PreferencesReporte {
             return false;
         }
     }
-
 }

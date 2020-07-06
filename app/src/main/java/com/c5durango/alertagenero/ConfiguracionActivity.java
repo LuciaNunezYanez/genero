@@ -1,6 +1,7 @@
 package com.c5durango.alertagenero;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -12,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -19,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.androidhiddencamera.HiddenCameraUtils;
 import com.c5durango.alertagenero.Servicios.ServicioNotificacion;
 import com.c5durango.alertagenero.Utilidades.PreferencesCiclo;
 import com.c5durango.alertagenero.Utilidades.Utilidades;
@@ -33,7 +36,7 @@ public class ConfiguracionActivity extends AppCompatActivity {
 
     boolean conf_nueva = false;
 
-    ImageButton btnAlmacWrite, btnCam, btnMicrof, btnUbic;
+    ImageButton btnAlmacWrite, btnCam, btnMicrof, btnUbic, btnEncima;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +45,6 @@ public class ConfiguracionActivity extends AppCompatActivity {
         switchServicioActivo = findViewById(R.id.switchServicioActivo);
         btnSaveCiclo = findViewById(R.id.iBtnGuardarCiclo);
         txtNoCiclo = findViewById(R.id.txtNoCiclo);
-        //txtNoCiclo.setFocusable(false);
-        //txtNoCiclo.setEnabled(true);
 
         obtenerPreferenciasNotificacion();
         switchServicioActivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -74,8 +75,6 @@ public class ConfiguracionActivity extends AppCompatActivity {
                 }catch (Exception e){
                     Toast.makeText(getApplication(), "¡Por favor ingrese un valor válido!" , Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         });
 
@@ -83,6 +82,7 @@ public class ConfiguracionActivity extends AppCompatActivity {
         btnAlmacWrite = findViewById(R.id.btnAlmacenamientoWrite);
         btnCam = findViewById(R.id.btnCamara);
         btnMicrof = findViewById(R.id.btnMicrofono);
+        btnEncima = findViewById(R.id.btnAparecerEncima);
         btnUbic = findViewById(R.id.btnUbicacion);
 
         // Detectar permisos
@@ -90,6 +90,7 @@ public class ConfiguracionActivity extends AppCompatActivity {
         permisoCam();
         permisoMicrof();
         permisoUbic();
+        permisoEncima();
     }
 
     private void obtenerPreferenciasNotificacion(){
@@ -132,7 +133,6 @@ public class ConfiguracionActivity extends AppCompatActivity {
         } catch (Exception io){
             Toast.makeText(getApplicationContext(), "¡Error al actualizar los datos locales!", Toast.LENGTH_LONG).show();
         }
-
     }
 
     public void detenerServicioPersistente(){
@@ -148,7 +148,6 @@ public class ConfiguracionActivity extends AppCompatActivity {
         editor.putBoolean("notificacionActiva", nuevoValor);
         editor.commit();
     }
-
 
     private void permisoAlmacWrite(){
         if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
@@ -182,6 +181,18 @@ public class ConfiguracionActivity extends AppCompatActivity {
         }
     }
 
+    public void permisoEncima(){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            btnEncima.setBackgroundTintList(ContextCompat.getColorStateList(ConfiguracionActivity.this, R.color.colorVerdeGob));
+        } else {
+            if(!Settings.canDrawOverlays(this))
+                btnEncima.setBackgroundTintList(ContextCompat.getColorStateList(ConfiguracionActivity.this, R.color.colorRojoClaro));
+            else
+                btnEncima.setBackgroundTintList(ContextCompat.getColorStateList(ConfiguracionActivity.this, R.color.colorVerdeGob));
+        }
+    }
+
+
     public void activarPermisoAlmacWrite(View view){
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constantes.MY_PERMISSIONS_REQUEST_ALMAC_WRITE);
     }
@@ -196,6 +207,13 @@ public class ConfiguracionActivity extends AppCompatActivity {
 
     public void activarPermisoUbic(View view){
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constantes.MY_PERMISSIONS_REQUEST_UBICAC);
+    }
+
+    public void aparecerEncima(View view){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(!Settings.canDrawOverlays(this))
+                HiddenCameraUtils.openDrawOverPermissionSetting(getApplicationContext());
+        }
     }
 
     @Override

@@ -837,18 +837,14 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constantes.MY_PERMISSIONS_REQUEST_UBICAC);
     }
 
-    private void permisoParaAparecerEncima(){
+    /*private void permisoParaAparecerEncima(){
         iniciarMain();
         // Comprobar permiso para acceder encima..
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if(!Settings.canDrawOverlays(this))
                 HiddenCameraUtils.openDrawOverPermissionSetting(getApplicationContext());
         }
-
-    }
-
-
-
+    }*/
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -866,7 +862,8 @@ public class RegistroActivity extends AppCompatActivity implements DatePickerDia
                 return;
             }
             case Constantes.MY_PERMISSIONS_REQUEST_UBICAC: {
-                permisoParaAparecerEncima();
+                iniciarMain();
+                //permisoParaAparecerEncima();
                 return;
             }
         }

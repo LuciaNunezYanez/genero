@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-
 public class Utilidades {
 
     static String TAG = "Utilidades";
@@ -90,9 +89,6 @@ public class Utilidades {
     }
 
     public static String tipoErrorVolley(VolleyError error){
-        Log.d("ERROROROOR", "LLEGA AQUI");
-        if(error == null)
-            Log.d("ERROROROOR", "ERROR NULL");
         if (error instanceof TimeoutError) {
             return "Problema con el servidor";
         } else if (error instanceof NoConnectionError) {
@@ -120,6 +116,4 @@ public class Utilidades {
         Pattern pattern = Patterns.PHONE;
         return pattern.matcher(telefono).matches();
     }
-
-
 }

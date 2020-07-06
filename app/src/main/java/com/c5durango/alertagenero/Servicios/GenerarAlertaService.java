@@ -68,13 +68,11 @@ public class GenerarAlertaService extends Service {
         try{
             idComercio = intent.getIntExtra("comercio", 0);
             idUsuario = intent.getIntExtra("usuario", 0);
-            // sala = intent.getStringExtra("sala");
             fecha = intent.getStringExtra("fecha");
-        }catch ( Exception e ){
+        } catch ( Exception e ){
             darResultados(getApplicationContext(), 0, false, false, false, "Los datos del grupo son incorrectos");
             stopSelf();
         }
-
         if (idComercio != 0 && idUsuario != 0){
             generarReporte();
         } else {
@@ -161,9 +159,6 @@ public class GenerarAlertaService extends Service {
         };
         requestQueue.add(requestAlerta);
     }
-
-
-
 
     @Override
     public void onDestroy() {

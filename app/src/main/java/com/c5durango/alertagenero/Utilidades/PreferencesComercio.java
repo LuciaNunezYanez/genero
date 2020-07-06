@@ -153,7 +153,7 @@ public class PreferencesComercio {
             try {
                 editorLogin.putInt("comercio", id_comercio);
                 editorLogin.putInt("usuario", id_usuarios_app);
-                editorLogin.putString("sala", "Comercios");
+                editorLogin.putString("sala", "Genero");
                 editorLogin.putString("token", token);
                 editorLogin.commit();
             } catch (Exception e){

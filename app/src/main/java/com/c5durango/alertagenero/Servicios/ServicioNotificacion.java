@@ -432,17 +432,10 @@ public class ServicioNotificacion extends Service {
             if (latitud != 0.0 && longitud != 0.0 && reporte != 0 && !fecha.equals("")){
                 EnviarCoordenadas enviarCoordenadas = new EnviarCoordenadas();
                 Boolean hasGPS = enviarCoordenadas.enviarCoordenadas(getApplicationContext(), latitud, longitud, fecha, reporte);
-                if(hasGPS){
-                    terminarServicioGPS();
-                    deboTerminar();
-                } else {
-                    terminarServicioGPS();
-                    deboTerminar();
-                }
+                terminarServicioGPS();
+                deboTerminar();
             }
         }
-
-
     };
 
     private BroadcastReceiver broadcastReceiverAudio = new BroadcastReceiver() {

@@ -74,9 +74,6 @@ public class MainActivity extends AppCompatActivity {
     static String FECHA_FRONTAL = "";
     static String FECHA_TRASERA = "";
 
-    static boolean audio_proceso = false;
-
-
     // VARIABLES PARA REPORTE CREADO
     public static int idComercio;
     public static int idUsuario;
@@ -264,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
                 String errorResp = "Error #1: " + Utilidades.tipoErrorVolley(error);
                 Notificaciones notificaciones = new Notificaciones();
                 notificaciones.crearNotificacionNormal(context, CHANNEL_ID,  R.drawable.ic_color_error, "¡No se pudo generar la alerta de pánico!", errorResp, ID_SERVICIO_WIDGET_GENERAR_ALERTA);
+                mostrarResultadoVista(R.drawable.ic_color_error, "¡No se pudo generar la alerta de pánico!" + "\n"+ errorResp);
                 requestQueue.stop();
             }
         }) {
@@ -389,7 +387,6 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("nombreAudio", "GrabacionBotonDePanico");
         intent.putExtra("padre", "in");
         intent.putExtra("reporteCreado", reporteCreado);
-        audio_proceso = true;
         context.startService(intent);
     }
 
@@ -449,6 +446,7 @@ public class MainActivity extends AppCompatActivity {
             }
             switch (resultCode) {
                 case ERROR:
+                    // Toast.makeText(contextoGlobal.get(), resultData.getString("mensaje"), Toast.LENGTH_SHORT).show();
                     break;
                 case SUCCESS:
                     if (contextoGlobal.get().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
@@ -508,10 +506,10 @@ public class MainActivity extends AppCompatActivity {
             if (ultimoReporte != 0 ){
                 EnviarAlertaCancelada enviarAlertaCancelada = new EnviarAlertaCancelada();
                 enviarAlertaCancelada.enviarAlertaCancelada(getApplicationContext(), ultimoReporte, 3);
-                mostrarResultadoVista(R.drawable.ic_color_error, "¡La alerta ha sido cancelada!");
-                Toast.makeText(contextoGlobal.get(), "Cancelando alerta..", Toast.LENGTH_LONG).show();
+                //mostrarResultadoVista(R.drawable.ic_color_error, "¡La alerta ha sido cancelada!");
+                //Toast.makeText(contextoGlobal.get(), "Cancelando alerta..", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(contextoGlobal.get(), "¡No se puede cancelar el ultimo reporte!", Toast.LENGTH_LONG).show();
+                Toast.makeText(contextoGlobal.get(), "¡El ultimo reporte es inválido!", Toast.LENGTH_LONG).show();
             }
         }
     }
