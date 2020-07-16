@@ -7,9 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
 import android.widget.RemoteViews;
 
 import com.c5durango.alertagenero.Servicios.ServicioWidget;
+import com.c5durango.alertagenero.Utilidades.Utilidades;
 
 import java.lang.ref.WeakReference;
 
@@ -17,13 +20,14 @@ public class PanicoWidget extends AppWidgetProvider {
 
     static WeakReference<Context> contextoGlobal;
     static String TAG = "ServicioWidget";
+    static Button btnWidget;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
         contextoGlobal = new WeakReference<>(context);
         Intent intentN = new Intent(context, ServicioWidget.class);
         PendingIntent pendingIntent;
-
+        // btnWidget = (Button)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             pendingIntent = PendingIntent.getForegroundService(context, 0, intentN, 0);
         else

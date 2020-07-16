@@ -27,8 +27,8 @@ public class Constantes {
     public static final int MY_PERMISSIONS_REQUEST_MICROF = 104;
 
     // Constantes para reporte
-    public static final int DIFERENCIA_ENTRE_REPORTES = 120000; // 60,000 = 1 minuto
-    public static final int LAPSO_PARA_CANCELAR_REPORTE = 120000; // 60000 = 1 minuto
+    public static final int DIFERENCIA_ENTRE_REPORTES = 600000; // 60,000 = 1 minuto (600000)
+    public static final int LAPSO_PARA_CANCELAR_REPORTE = 90000; // 60000 = 1 minuto
 
     // Constantes para audio
     public static int DURACION_AUDIO = 30000; // 30 x 4 = 2 minutos
@@ -36,5 +36,6 @@ public class Constantes {
 
 
     // public static String URL = "http://10.11.127.70:8888"; // LOCAL
-    public static String URL = "http://189.254.158.196:8888";    // SERVER
+    public static String URL = "http://189.254.158.196:8888";    // IP PUBLICA
+    // public static String URL = "http://10.11.118.91:8888";    // IP PRIVADA
 }

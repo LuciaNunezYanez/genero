@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     public static int idUsuario;
     public static int reporteCreado;
     public static boolean btnPresionado = false;
+    public static int contador = 0;
 
     private static ImageView imgResultado;
     public static Button btnCancelarAlerta;
@@ -167,15 +169,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void activarBoton(View view){
+        contador++;
         // Validar si se puede generar una nueva alerta
         Boolean puedeEnviar = PreferencesReporte.puedeEnviarReporte(getApplicationContext(), System.currentTimeMillis());
 
-        if(puedeEnviar) {
+        if(puedeEnviar && contador <= 1) {
             mostrarResultadoVista(R.drawable.ic_color_send, "Enviando..");
             PreferencesReporte.guardarReporteInicializado(getApplicationContext());
             enviarAlerta(getApplicationContext(), idComercio, idUsuario);
-        } else{
-            Log.d(TAG, "NO PUEDE GENERAR REPORTE POR QUE HAY UNO PENDIENTE!!");
+        } else if(puedeEnviar && contador > 1 ){
+            Log.d(TAG, "No puedo enviar por que estoy en espera.. " + contador);
         }
     }
 
@@ -230,10 +233,18 @@ public class MainActivity extends AppCompatActivity {
                                     Log.e(TAG, "No tiene permisos GPS");
                                 }
 
-                                if(ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
-                                    comenzarGrabacionAudio(context);
-                                } else {
-                                    Log.e(TAG, "No tiene permisos de audio");
+                                // Solo grabar audio para API 23 en adelante
+                                if( Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                                    if(ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+                                        // Validar si el servicio está activo
+                                        if(!Utilidades.isMyServiceRunning(context, AudioService.class)){
+                                            // Invertí la condición y meti comenzar
+                                            // terminarGrabacionAudio();
+                                            // Thread.sleep(3000);
+                                            comenzarGrabacionAudio(context);
+                                        }
+
+                                    }
                                 }
 
                                 if(ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){

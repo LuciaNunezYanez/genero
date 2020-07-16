@@ -23,9 +23,9 @@ public class Notificaciones {
                 builder.setContentTitle(titulo);
             builder.setContentText(contenido);
             builder.setColor(Color.GRAY);
-            builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            builder.setPriority(NotificationCompat.PRIORITY_LOW);
             //builder.setLights(Color.MAGENTA, 1000, 1000);
-            builder.setDefaults(Notification.DEFAULT_SOUND);
+            //builder.setDefaults(Notification.DEFAULT_SOUND);
 
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
             notificationManagerCompat.notify(ID_SERVICIO, builder.build());
@@ -33,7 +33,7 @@ public class Notificaciones {
         } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 
             final NotificationManager mNotific = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            int importancia = NotificationManager.IMPORTANCE_HIGH;
+            int importancia = NotificationManager.IMPORTANCE_LOW;
 
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL, Constantes.NOMBRE_APP, importancia);
             notificationChannel.setDescription(contenido);

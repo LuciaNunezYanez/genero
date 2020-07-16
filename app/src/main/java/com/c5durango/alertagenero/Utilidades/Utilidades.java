@@ -30,6 +30,7 @@ public class Utilidades {
 
     public static String obtenerFecha(){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Log.d(TAG,dateFormat.format(new Date()) );
         return dateFormat.format(new Date()); // Salida:  2019-10-28 15:24:55
     }
 

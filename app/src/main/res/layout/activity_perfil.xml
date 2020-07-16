@@ -319,6 +319,20 @@
                         android:textSize="18sp" />
                 </LinearLayout>
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btnSalir"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
+                android:backgroundTint="@color/colorRojoGob"
+                android:fontFamily="sans-serif-condensed-light"
+                android:onClick="cerrarSesion"
+                android:text="Cerrar sesión"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp" />
         </LinearLayout>
     </ScrollView>
 

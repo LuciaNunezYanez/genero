@@ -684,7 +684,6 @@
                         android:layout_marginLeft="20dp"
                         android:layout_marginBottom="5dp"
                         android:backgroundTint="@color/colorVerdeGob"
-                        android:drawableRight="@drawable/ic_yes"
                         android:text="Finalizar "
                         android:textColor="#FFFFFF"
                         android:textSize="14dp" />

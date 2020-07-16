@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -94,7 +95,6 @@ public class AudioService extends Service  {
     }
 
     public void comenzarHiloGrabacionAudio(int posicionGuardar){
-
         grabarAudioBackground = new GrabarAudioBackground();
         grabarAudioBackground.execute(posicionGuardar);
     }
@@ -135,7 +135,7 @@ public class AudioService extends Service  {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    //Terminó de ejecutar la tarea
+                    //Terminó de ejecutar la tareaf
                     Log.d(TAG, "(Hilo 2) ------- FIN " + contadorEnvio + "-------");
                     contadorEnvio++;
 
@@ -233,19 +233,26 @@ public class AudioService extends Service  {
             mediaRecorder.setOutputFile(AudioSavePathInDevice);
             mediaRecorder.setOnInfoListener(this);
 
+
+            mediaRecorder.setOnErrorListener(new MediaRecorder.OnErrorListener() {
+                @Override
+                public void onError(MediaRecorder mr, int what, int extra) {
+                    darResultados(false);
+                }
+            });
+
             try {
                 mediaRecorder.prepare();
                 mediaRecorder.start();
-
-                fechas[posicionParaGuardar] = Utilidades.obtenerFecha();
+                fechas[ posicionParaGuardar ] = Utilidades.obtenerFecha();
 
                 hasStart = true;
             } catch (IllegalStateException e) {
-                Log.d(TAG, "(Hilo 1) Catch 1");
-                e.printStackTrace();
+                Log.d(TAG, "(Hilo 1) Catch 1" + e.getMessage());
+                darResultados(false);
             } catch (IOException e) {
                 Log.d(TAG, "(Hilo 1) Catch 2" + e.getMessage());
-                e.printStackTrace();
+                darResultados(false);
             }
         }
 
@@ -263,7 +270,6 @@ public class AudioService extends Service  {
         protected void onPostExecute(String path) {
             super.onPostExecute(path);
             Log.d(TAG, "(Hilo 1) " + path);
-
             if(path.length()>5){ // Si se tiene la ruta correcta
                 handlerTerminoGrabacion.sendEmptyMessage(0);
             } else{
@@ -282,14 +288,14 @@ public class AudioService extends Service  {
             Notification notification =
                     new Notification.Builder(getApplicationContext(), CHANNEL_ID)
                             .setColor(Color.WHITE)
-                            .setContentText("Grabando audio..")
+                            .setContentText("Grabando audio...")
                             .setSmallIcon(R.drawable.ic_microfono)
                             .setColor(Color.GRAY)
                             .setContentIntent(pendingIntent)
                             .build();
 
             String descripcion = "El uso de este servicio le permite detectar cuando se presiona tres veces el botón de bloqueo y genera la alerta de pánico"; //
-            int importancia = NotificationManager.IMPORTANCE_HIGH;
+            int importancia = NotificationManager.IMPORTANCE_LOW;
 
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, Constantes.NOMBRE_APP, importancia);
             notificationChannel.setDescription(descripcion);
@@ -309,7 +315,7 @@ public class AudioService extends Service  {
             Notification notification =
                     new Notification.Builder(getApplicationContext())
                             .setColor(Color.WHITE)
-                            .setContentText("Grabando audio..")
+                            .setContentText("Grabando audio....")
                             .setSmallIcon(R.drawable.ic_microfono)
                             .setColor(Color.GRAY)
                             .setContentIntent(pendingIntent)

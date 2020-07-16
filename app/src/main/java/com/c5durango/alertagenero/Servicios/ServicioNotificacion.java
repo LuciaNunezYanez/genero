@@ -385,12 +385,18 @@ public class ServicioNotificacion extends Service {
                     Notificaciones notificaciones = new Notificaciones();
                     notificaciones.crearNotificacionNormal(context, CHANNEL_ID,  R.drawable.ic_color_success, "¡Alerta enviada!", "Se generó alerta con folio #" + reporteCreado, ID_SERVICIO_WIDGET_GENERAR_ALERTA);
 
-                    // Comenzar con el envio de multimedia
-                    if(ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
-                        terminarGrabacionAudio();
-                        comenzarGrabacionAudio();
-                    } else {
-                        Log.d(TAG, "No se tienen los permisos de audio");
+                    // Comenzar con el envio de multimedia unicamente para API +23
+                    if( Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+                            // Validar si el servicio está activo
+                            if(!Utilidades.isMyServiceRunning(getApplication(), AudioService.class)){
+                                // Invertí la condición y meti comenzar
+                                // terminarGrabacionAudio();
+                                // Thread.sleep(3000);
+                                comenzarGrabacionAudio();
+                            }
+
+                        }
                     }
 
                     // GPS
@@ -478,7 +484,7 @@ public class ServicioNotificacion extends Service {
                             .build();
             // Crear Canal de notificaciones
             String descripcion = "El uso de este servicio le permite detectar cuando se presiona tres veces el botón de bloqueo y genera la alerta de pánico"; //
-            int importancia = NotificationManager.IMPORTANCE_HIGH;
+            int importancia = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, Constantes.NOMBRE_APP, importancia);
             notificationChannel.setDescription(descripcion);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);

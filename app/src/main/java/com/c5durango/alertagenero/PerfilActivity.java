@@ -3,9 +3,17 @@ package com.c5durango.alertagenero;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.c5durango.alertagenero.Utilidades.Notificaciones;
+
+import static com.c5durango.alertagenero.Constantes.CHANNEL_ID;
+import static com.c5durango.alertagenero.Constantes.ID_SERVICIO_WIDGET_GENERAR_ALERTA;
 
 
 public class PerfilActivity extends AppCompatActivity {
@@ -95,5 +103,24 @@ public class PerfilActivity extends AppCompatActivity {
             txtTelMovil.setText("ID Usuario: 0");
         }
 
+    }
+
+    public void cerrarSesion(View view){
+        try {
+            SharedPreferences.Editor editor1 = getSharedPreferences("Usuario", MODE_PRIVATE).edit();
+            editor1.clear().apply();
+            SharedPreferences.Editor editor2 = getSharedPreferences("Login", MODE_PRIVATE).edit();
+            editor2.clear().apply();
+            SharedPreferences.Editor editor3 = getSharedPreferences("Comercio", MODE_PRIVATE).edit();
+            editor3.clear().apply();
+            SharedPreferences.Editor editor4 = getSharedPreferences("ComercioDireccion", MODE_PRIVATE).edit();
+            editor4.clear().apply();
+            SharedPreferences.Editor editor5 = getSharedPreferences("UltimoReporte", MODE_PRIVATE).edit();
+            editor5.clear().apply();
+
+            startActivity( new Intent(this, MainActivity.class));
+        } catch(Exception e){
+            Toast.makeText(this, "¡No se puede cerrar sesión, reintente mas tarde!", Toast.LENGTH_LONG).show();
+        }
     }
 }

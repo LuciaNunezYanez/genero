@@ -59,6 +59,7 @@ public class ServicioWidget extends Service {
     int reporteCreado = 0;
     int idComercio = 0;
     int idUsuario = 0;
+    int contador = 0;
 
     Intent intentGPS;
     Notificaciones notificaciones = new Notificaciones();
@@ -85,8 +86,10 @@ public class ServicioWidget extends Service {
     }
 
     public void iniciarProceso(){
+        contador++;
+
         Boolean puedeEnviar = PreferencesReporte.puedeEnviarReporte(getApplicationContext(), System.currentTimeMillis());
-        if(puedeEnviar){
+        if(puedeEnviar && contador <= 1){
             PreferencesReporte.guardarReporteInicializado(getApplicationContext());
             LocalBroadcastManager.getInstance(getApplication()).registerReceiver(broadcastReceiverGenerarAlerta, new IntentFilter("generarAlertaService"));
             // Registrar escuchadores
@@ -94,6 +97,8 @@ public class ServicioWidget extends Service {
             registrarEscuchadorGPS();
             // Iniciar el servicio GenerarAlertaService
             iniciarServicioGenerarAlerta();
+        } else if(puedeEnviar && contador > 1 ){
+            Log.d(TAG, "No puedo enviar por que estoy en espera.. " + contador);
         }
     }
 
@@ -113,7 +118,7 @@ public class ServicioWidget extends Service {
                             .build();
 
             // Crear al canal de notificación
-            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, Constantes.NOMBRE_APP, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, Constantes.NOMBRE_APP, NotificationManager.IMPORTANCE_LOW);
             notificationChannel.setDescription(descripcion);
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(notificationChannel);
@@ -388,11 +393,17 @@ public class ServicioWidget extends Service {
                     PreferencesReporte.actualizarUltimoReporte(getApplicationContext(), reporteCreado);
                     notificaciones.crearNotificacionNormal(context, CHANNEL_ID,  R.drawable.ic_color_success, "", "Se generó alerta con folio #" + reporteCreado, ID_SERVICIO_WIDGET_GENERAR_ALERTA);
 
-                    if(ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
-                        terminarGrabacionAudio();
-                        comenzarGrabacionAudio();
-                    } else {
-                        Log.d(TAG, "No se tienen los permisos de AUDIO");
+                    if( Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+                            // Validar si el servicio está activo
+                            if(!Utilidades.isMyServiceRunning(getApplication(), AudioService.class)){
+                                // Invertí la condición y meti comenzar
+                                // terminarGrabacionAudio();
+                                // Thread.sleep(3000);
+                                comenzarGrabacionAudio();
+                            }
+
+                        }
                     }
 
                     terminarServicioGPS();
@@ -411,6 +422,8 @@ public class ServicioWidget extends Service {
                     }*/
                 } else {
                     notificaciones.crearNotificacionNormal(getApplicationContext(), CHANNEL_ID, R.drawable.ic_color_error, "¡No se pudo generar la alerta de pánico!", parametros.getString("message", "Sin mensaje"), ID_SERVICIO_WIDGET_CREAR_REPORTE);
+                    if (puedoFinalizar(context))
+                        stopSelf();
                 }
             } catch (Exception e){
                 Log.e(TAG, "Catch broadcast receiver generar alerta: " + e.getMessage());
@@ -457,7 +470,8 @@ public class ServicioWidget extends Service {
     };
 
     private static Boolean puedoFinalizar(Context context){
-        if(!Utilidades.isMyServiceRunning(context, AudioService.class) && !Utilidades.isMyServiceRunning(context, GPSService.class)){
+        if((Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1 && !Utilidades.isMyServiceRunning(context, AudioService.class) && !Utilidades.isMyServiceRunning(context, GPSService.class))
+                || (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1 && !Utilidades.isMyServiceRunning(context, GPSService.class))){
             //Notificaciones.crearNotificacionNormal(context, CHANNEL_ID, R.drawable.ic_color_error, "Botón de pánico activado", "¡Se envió multimedia!", ID_SERVICIO_WIDGET);
             return true;
         } else {
